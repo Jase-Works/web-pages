@@ -24,8 +24,8 @@ body { font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; background
 <body>
 <div class="lock-screen" id="lock">
   <h1>🔒 碩士論文口試簡報</h1>
-  <p style="color: rgba(255,255,255,0.5); margin-bottom: 24px; font-size: 16px;">請點選下面簡報進入</p>
-  <p>請輸入密碼瀏覽</p>
+  <p id="instruction" style="color: rgba(255,255,255,0.5); margin-bottom: 24px; font-size: 16px; display: none;">請點選下面簡報進入</p>
+  <p id="pw-prompt">請輸入密碼瀏覽</p>
   <div>
     <input type="password" id="pw" placeholder="密碼" onkeydown="if(event.key==='Enter')check()">
     <button onclick="check()">進入</button>
@@ -42,9 +42,10 @@ function check() {
   if (pw === 'scu') {
     document.getElementById('links').style.display = 'block';
     document.getElementById('err').style.display = 'none';
+    document.getElementById('instruction').style.display = 'block';
     document.querySelector('input').style.display = 'none';
     document.querySelector('button').style.display = 'none';
-    document.querySelector('p').style.display = 'none';
+    document.querySelector('p#pw-prompt').style.display = 'none';
   } else {
     document.getElementById('err').style.display = 'block';
   }
