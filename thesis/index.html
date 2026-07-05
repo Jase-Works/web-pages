@@ -16,13 +16,13 @@ body { font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; background
 .lock-screen button:hover { background: #17905f; }
 .error { color: #E05A6F; font-size: 14px; margin-top: 12px; display: none; }
 .links { display: none; margin-top: 32px; }
-.links a { display: block; padding: 16px 32px; margin: 12px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; text-decoration: none; font-size: 18px; transition: all 0.2s; }
+.links a { display: block; padding: 16px 32px; margin: 12px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; text-decoration: none; font-size: 18px; transition: all 0.2s; cursor: pointer; }
 .links a:hover { background: rgba(30,166,114,0.15); border-color: #1EA672; }
-.links a span { color: rgba(255,255,255,0.5); font-size: 14px; }
+#content-frame { display: none; width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 9999; }
 </style>
 </head>
 <body>
-<div class="lock-screen">
+<div class="lock-screen" id="lock">
   <h1>🔒 碩士論文口試簡報</h1>
   <p>請輸入密碼瀏覽</p>
   <div>
@@ -31,10 +31,10 @@ body { font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; background
   </div>
   <div class="error" id="err">密碼錯誤</div>
   <div class="links" id="links">
-    <a href="v7.html">V7 精簡版（40頁）<br><span>推薦｜口試報告用</span></a>
-    <!-- <a href="v5.html">V5 完整版（50頁）<br><span>含全部細節</span></a> -->
+    <a onclick="loadPage('v7.html')">林志明-口試簡報</a>
   </div>
 </div>
+<iframe id="content-frame"></iframe>
 <script>
 function check() {
   const pw = document.getElementById('pw').value;
@@ -43,10 +43,16 @@ function check() {
     document.getElementById('err').style.display = 'none';
     document.querySelector('input').style.display = 'none';
     document.querySelector('button').style.display = 'none';
-    document.querySelector('p').textContent = '請選擇版本：';
+    document.querySelector('p').style.display = 'none';
   } else {
     document.getElementById('err').style.display = 'block';
   }
+}
+function loadPage(url) {
+  document.getElementById('lock').style.display = 'none';
+  const frame = document.getElementById('content-frame');
+  frame.src = url;
+  frame.style.display = 'block';
 }
 </script>
 </body>
