@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>口試簡報｜人工智慧服務與使用者間著作原創性之衝擊研析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   設計變數 —— 曼徹斯特大學校色（主紫 #660099・輔助黃 #FFCC33）
+   要調整配色或字級，修改此區即可
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  --purple:#660099;         /* Manchester Purple */
+  --purple-deep:#3D005C;    /* 深紫（大標題） */
+  --purple-mid:#8F4DB8;
+  --purple-tint:#F6EFFA;    /* 淡紫面板 */
+  --purple-tint2:#EDE0F6;
+  --yellow:#FFCC33;         /* Manchester Yellow（強調刻度） */
+  --yellow-soft:#FFF3CC;
+  --ink:#2A2331;            /* 內文 */
+  --ink-soft:#6B6176;       /* 次要文字 */
+  --line:#E3D6EE;
+  --paper:#FFFFFF;
+  --font:"Noto Sans TC",-apple-system,sans-serif;   /* 全簡報唯一字體 */
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--paper);color:var(--ink);overflow:hidden}
+
+/* ── 左側章節書脊：顯示簡報與論文章節之對應 ── */
+#spine{position:fixed;left:0;top:0;bottom:0;width:96px;z-index:40;
+  background:var(--purple-deep);display:flex;flex-direction:column;justify-content:center;
+  gap:30px;align-items:center}
+#spine .sp{writing-mode:vertical-rl;font-size:15px;letter-spacing:.32em;color:#9E7DBE;
+  transition:.25s;cursor:pointer;font-weight:500;padding:4px 0;border-right:3px solid transparent}
+#spine .sp.on{color:#fff;font-weight:900;border-right-color:var(--yellow)}
+#spine .sp-mark{font-size:10px;color:#8A66AC;letter-spacing:.2em;writing-mode:vertical-rl;font-weight:700}
+
+/* ── 投影片 ── */
+#deck{position:absolute;left:96px;right:0;top:0;bottom:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:44px 66px 60px 58px;overflow:hidden}
+.slide.active{display:flex}
+.slide .inner{width:100%;max-width:1220px;margin:0 auto;display:flex;flex-direction:column;flex:1;min-height:0;position:relative;z-index:1}
+
+/* 章節浮水印：以章數大字建立空間層級 */
+.slide[data-ch]::after{position:absolute;right:26px;top:-30px;font-weight:900;
+  font-size:230px;color:#F5EDFA;line-height:1;pointer-events:none;user-select:none;z-index:0}
+.slide[data-ch="1"]::after{content:"壹"}.slide[data-ch="2"]::after{content:"貳"}
+.slide[data-ch="3"]::after{content:"參"}.slide[data-ch="4"]::after{content:"肆"}
+.slide[data-ch="5"]::after{content:"伍"}.slide[data-ch="6"]::after{content:"陸"}
+
+/* ── 層級一：眉標（英文小標＋中文章節） ── */
+.top{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.tick{width:26px;height:8px;background:var(--yellow);flex:0 0 auto}
+.eyebrow{font-size:13.5px;letter-spacing:.26em;color:var(--purple);font-weight:700;text-transform:uppercase}
+.eyebrow .zh{color:var(--ink-soft);letter-spacing:.14em;font-weight:500;margin-left:10px}
+.tchip{margin-left:auto;font-size:12.5px;color:var(--ink-soft);border:1.5px solid var(--line);
+  border-radius:99px;padding:4px 14px;background:#fff;font-weight:500}
+
+/* ── 層級二：標題 ── */
+h1{font-weight:900;color:var(--purple-deep);font-size:clamp(30px,3.3vw,44px);line-height:1.3;margin-bottom:6px}
+h1 .thin{font-weight:500;color:var(--purple)}
+
+/* ── 層級三：命題色帶（每頁至多一條，最先閱讀的重點） ── */
+.band{background:var(--purple);color:#fff;border-left:10px solid var(--yellow);
+  padding:16px 24px;border-radius:0 14px 14px 0;font-size:clamp(16px,1.5vw,19.5px);
+  font-weight:700;line-height:1.72;margin:14px 0 18px}
+.band .y{color:var(--yellow)}
+.band small{display:block;font-weight:400;font-size:.82em;color:#E4D2F2;margin-top:6px}
+
+/* ── 進場動畫 ── */
+.slide.active .rv{opacity:0;transform:translateY(16px);animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards;
+  animation-delay:calc(var(--d,0)*.09s)}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide.active .rv{animation:none;opacity:1;transform:none}}
+
+/* ── 層級四：主內容元件 ── */
+.cols{display:grid;gap:18px}
+.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:20px 22px;
+  box-shadow:0 2px 6px rgba(102,0,153,.06)}
+.card.tint{background:var(--purple-tint);border-color:var(--purple-tint2)}
+.card h3{font-size:19px;color:var(--purple-deep);margin:8px 0;font-weight:900;line-height:1.4}
+.card p,.card li{font-size:15.5px;line-height:1.74;color:var(--ink)}
+.card .k{font-size:12.5px;color:var(--purple);letter-spacing:.2em;font-weight:700;display:block}
+.icon{width:34px;height:34px;display:block;margin-bottom:2px}
+.icon *{stroke:var(--purple);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+ul.clean{list-style:none}
+ul.clean li{padding-left:20px;position:relative;margin-bottom:8px}
+ul.clean li::before{content:"";position:absolute;left:2px;top:.6em;width:8px;height:8px;background:var(--yellow)}
+.hl{background:linear-gradient(transparent 60%,var(--yellow-soft) 60%);font-weight:900;color:var(--purple-deep)}
+.num{font-weight:900;color:var(--purple);font-size:15px}
+.lede{font-size:clamp(15px,1.35vw,17.5px);color:var(--ink);line-height:1.8;max-width:64em}
+.lede b{color:var(--purple-deep)}
+.badge{display:inline-block;font-size:12.5px;font-weight:700;border-radius:8px;padding:3px 10px;margin-top:8px}
+.badge.no{background:#F6E3E1;color:#9C3A32}.badge.yes{background:#E7F3E4;color:#3F7A35}
+.badge.part{background:var(--yellow-soft);color:#8A6A00}
+.case{font-size:12.5px;color:var(--purple);font-weight:700;letter-spacing:.02em}
+
+/* ── 出處列 ── */
+.cite{margin-top:auto;padding-top:12px;font-size:12px;color:#9C8FAB;line-height:1.7;border-top:1.5px dashed var(--line)}
+.cite::before{content:"出處　";color:var(--purple);font-weight:900}
+
+/* ── 流程鏈 ── */
+.chain{display:flex;align-items:stretch;gap:0}
+.chain .node{flex:1;background:#fff;border:2px solid var(--line);border-radius:16px;padding:18px 18px;position:relative}
+.chain .node.em{border-color:var(--purple);background:var(--purple-tint)}
+.chain .node h4{font-size:18px;color:var(--purple-deep);margin:6px 0;font-weight:900}
+.chain .node p{font-size:14.5px;line-height:1.68}
+.chain .node .n{font-size:12px;color:var(--purple);letter-spacing:.22em;font-weight:900;display:block}
+.chain .arr{align-self:center;padding:0 6px;color:var(--yellow);font-size:30px;font-weight:900;flex:0 0 auto;
+  text-shadow:0 1px 0 rgba(102,0,153,.25)}
+
+/* ── 時間軸 ── */
+.tl{position:relative;padding-left:30px}
+.tl::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:3px;background:var(--purple-tint2)}
+.tl .ev{position:relative;margin-bottom:16px}
+.tl .ev::before{content:"";position:absolute;left:-27px;top:6px;width:13px;height:13px;border-radius:50%;
+  background:#fff;border:3.5px solid var(--purple)}
+.tl .ev.g::before{border-color:var(--yellow);background:var(--yellow)}
+.tl .ev h4{font-size:17.5px;color:var(--purple-deep);margin-bottom:3px;font-weight:900}
+.tl .ev p{font-size:14.5px;color:var(--ink);line-height:1.66}
+.tl .ev .case{display:block;margin-bottom:2px}
+
+/* ── 比較表 ── */
+table.cmp{width:100%;border-collapse:collapse;font-size:15px}
+table.cmp th{background:var(--purple);color:#fff;font-weight:900;padding:12px 14px;text-align:left;font-size:15.5px}
+table.cmp th:first-child{border-radius:12px 0 0 0}table.cmp th:last-child{border-radius:0 12px 0 0}
+table.cmp td{padding:12px 14px;border-bottom:1.5px solid var(--line);line-height:1.6;vertical-align:top}
+table.cmp td.f{font-weight:900;color:var(--purple-deep);white-space:nowrap}
+table.cmp tr:nth-child(even) td{background:var(--purple-tint)}
+table.cmp .s{font-size:12.5px;color:var(--purple)}
+
+/* ── 三層文件堆疊 ── */
+.stack{display:flex;flex-direction:column;gap:12px}
+.stack .layer{border-radius:14px;padding:16px 20px;display:flex;gap:18px;align-items:baseline}
+.stack .layer .no{font-weight:900;font-size:13px;letter-spacing:.15em;flex:0 0 auto}
+.stack .layer h4{font-size:18px;flex:0 0 7.2em;font-weight:900}
+.stack .layer p{font-size:14.5px;line-height:1.65}
+.stack .l1{background:var(--purple-deep);color:#fff}.stack .l1 .no{color:var(--yellow)}
+.stack .l2{background:var(--purple);color:#fff}.stack .l2 .no{color:var(--yellow)}
+.stack .l3{background:var(--purple-tint2);color:var(--purple-deep)}.stack .l3 .no{color:var(--purple)}
+
+/* ── 結語條列 ── */
+.creed{counter-reset:cd}
+.creed li{list-style:none;counter-increment:cd;position:relative;padding:15px 20px 15px 66px;
+  margin-bottom:12px;background:#fff;border:1.5px solid var(--line);border-left:8px solid var(--purple);
+  border-radius:12px;font-size:17px;line-height:1.7;color:var(--purple-deep);font-weight:700}
+.creed li::before{content:counter(cd);position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  font-weight:900;font-size:26px;color:var(--yellow);-webkit-text-stroke:1px var(--purple)}
+
+/* ── 導航、進度 ── */
+#bar{position:fixed;left:96px;right:0;bottom:0;height:6px;background:var(--purple-tint2);z-index:50}
+#bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--purple-deep));transition:width .35s}
+#bar i::after{content:"";float:right;width:14px;height:100%;background:var(--yellow)}
+#pg{position:fixed;right:24px;bottom:16px;font-size:13px;color:var(--ink-soft);z-index:50;font-weight:700}
+#hint{position:fixed;left:112px;bottom:16px;font-size:12px;color:#B7A8C6;z-index:50}
+.nav{position:fixed;top:50%;transform:translateY(-50%);z-index:60;border:2px solid var(--line);
+  background:#fff;color:var(--purple);width:44px;height:44px;border-radius:50%;cursor:pointer;
+  font-size:20px;font-weight:900;transition:.2s;box-shadow:0 3px 10px rgba(102,0,153,.12)}
+.nav:hover{background:var(--purple);color:#fff}
+#prev{left:112px}#next{right:20px}
+@media (max-width:900px){#spine{display:none}#deck,#bar{left:0}#prev{left:12px}.slide{padding:34px 26px 60px}}
+
+/* ── 封面 ── */
+.cover{justify-content:center;background:linear-gradient(120deg,#fff 58%,var(--purple-tint) 100%)}
+.cover .school{font-size:15px;letter-spacing:.34em;color:var(--purple);margin-bottom:24px;font-weight:700}
+.cover h1{font-size:clamp(38px,4.6vw,62px);line-height:1.32}
+.cover .sub{font-size:clamp(19px,2vw,27px);color:var(--purple);font-weight:900;letter-spacing:.1em;margin:16px 0 12px;
+  padding-left:16px;border-left:8px solid var(--yellow)}
+.cover .en{font-size:13.5px;color:var(--ink-soft);line-height:1.85;max-width:48em}
+.cover .who{margin-top:40px;display:flex;gap:52px;font-size:17px}
+.cover .who b{color:var(--purple-deep);font-weight:900}
+.cover .who span{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px;letter-spacing:.22em;font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- ═══ 左側書脊（點擊可跳章） ═══ -->
+<nav id="spine">
+  <span class="sp-mark">論文章節</span>
+  <span class="sp" data-ch="1">壹</span>
+  <span class="sp" data-ch="2">貳</span>
+  <span class="sp" data-ch="3">參</span>
+  <span class="sp" data-ch="4">肆</span>
+  <span class="sp" data-ch="5">伍</span>
+  <span class="sp" data-ch="6">陸</span>
+</nav>
+
+<main id="deck">
+
+<!-- ═══════════ SLIDE 01 · 封面 ═══════════ -->
+<section class="slide cover" data-time="">
+  <div class="inner">
+    <p class="school rv" style="--d:0">東吳大學法學院法律學系・論文口試</p>
+    <h1 class="rv" style="--d:1">人工智慧服務與使用者間<br>著作原創性之衝擊研析</h1>
+    <p class="sub rv" style="--d:2">討論原創性的概念和界限</p>
+    <p class="en rv" style="--d:3">Assessing AI Development and User-Generated Originality:<br>The Boundaries and Concepts of Original</p>
+    <div class="who rv" style="--d:4">
+      <div><span>指導教授</span><b>林冠佑 教授</b></div>
+      <div><span>研究生</span><b>許郁欣</b></div>
+      <div><span>口試日期</span><b>中華民國 115 年 7 月 8 日</b></div>
+    </div>
+</section>
+
+<!-- ═══════════ SLIDE 02 · 報告議程 Agenda ═══════════ -->
+<section class="slide" data-time="≈0.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Agenda<span class="zh"></span></span><span class="tchip">全程 20–25 分鐘</span></div>
+    <h1 class="rv" style="--d:0">報告議程</h1>
+    <table class="cmp rv" style="--d:1;margin-top:14px">
+      <tr><th style="width:110px">章節</th><th>論文章名</th><th>本報告所處理之問題</th><th style="width:96px">時間</th></tr>
+      <tr><td class="f">第一章</td><td>緒論</td><td>研究對象、方法與範圍之界定</td><td>約 3 分</td></tr>
+      <tr><td class="f">第二章</td><td>原創性概念與著作權法理論</td><td>我國實務之發展；使用者貢獻之認定指標</td><td>約 7 分</td></tr>
+      <tr><td class="f">第三章</td><td>人機創作互動模式</td><td>互動模式之類型化；爭訟情境之推演；證據結構之提案</td><td>約 4 分</td></tr>
+      <tr><td class="f">第四章</td><td>國內外比較研究</td><td>美國、歐盟、日本與中國：分歧之立場與收斂之操作</td><td>約 5 分</td></tr>
+      <tr><td class="f">第五章</td><td>平台商業模式與保護挑戰</td><td>商業模式如何預先配置爭議之事實結構</td><td>約 3 分</td></tr>
+      <tr><td class="f">第六章</td><td>結論與策略建議</td><td>三階段審查程序；規範建議；法律職業之角色</td><td>約 4 分</td></tr>
+    </table>
+    <p class="cite rv" style="--d:3">口試本目錄，頁 2–3；第一章第三節「研究範圍與架構」，頁 7–8。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 03 · 核心命題 ═══════════ -->
+<section class="slide" data-time="≈1分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Overview<span class="zh">報告之命題與論證結構</span></span><span class="tchip">全程 20–25 分鐘</span></div>
+    <h1 class="rv" style="--d:0">本報告之核心命題</h1>
+    <div class="band rv" style="--d:1">在生成式人工智慧介入創作之後，原創性之判斷應當自「成果之外觀」，轉向<span class="y">可歸責於自然人之表達選擇</span>——此種選擇必須可被指認、可被證明，且其保護範圍應受相應之限縮。</div>
+    <p class="lede rv" style="--d:2;margin:6px 0 14px">此一命題，將依下列論證路徑逐步展開與檢驗：</p>
+    <div class="chain rv" style="--d:3">
+      <div class="node"><span class="n">第二章</span><h4>理論之基礎</h4><p>釐清原創性作為保護門檻之雙重要件，及其與侵權判斷之層次關係。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">第三章</span><h4>事實之類型化</h4><p>將人機互動整理為可證明之操作型態，並提出三層證據文件之結構。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">第四章</span><h4>比較法之檢驗</h4><p>以美、歐、日、中之案例與政策文件，檢驗判準之可行性與收斂方向。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">第五章</span><h4>制度之脈絡</h4><p>置於平台商業模式與權利義務配置之中，觀察判準之實際運作條件。</p></div>
+      <div class="arr">→</div>
+      <div class="node em"><span class="n">第六章</span><h4>結論與建議</h4><p>凝聚為三階段審查程序，並提出五項規範建議。</p></div>
+    </div>
+    <p class="cite rv" style="--d:4">口試本第一章第三節第二項「研究架構」，頁 8。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 03 · 第一章：問題之提出 ═══════════ -->
+<section class="slide" data-ch="1" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 1<span class="zh">緒論</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">成果之外觀，與形成過程之分離</h1>
+    <div class="band rv" style="--d:1">生成式 AI 之產出，在外觀上往往與人類創作無從區辨；然其形成因素——平台預設、模型運算與使用者操作——已呈現<span class="y">高度分散</span>之狀態。</div>
+    <div class="cols c3">
+      <div class="card rv" style="--d:2">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v-2M15 4v-2M9 22v-2M15 22v-2M4 9h-2M4 15h-2M22 9h-2M22 15h-2"/><rect x="9" y="9" width="6" height="6"/></svg>
+        <span class="k">觀察一</span><h3>流程之工具化與標準化</h3>
+        <p>效率提升之同時，創作者對於具體表達之控制與可歸責性遭到稀釋，原創性之判斷因此更為困難。</p></div>
+      <div class="card rv" style="--d:3">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="5" width="8" height="8" rx="1"/><rect x="13" y="5" width="8" height="8" rx="1"/><rect x="3" y="16" width="8" height="5" rx="1"/><rect x="13" y="16" width="8" height="5" rx="1"/></svg>
+        <span class="k">觀察二</span><h3>輸出之同質化</h3>
+        <p>生成內容建立於統計分析與模式模仿之上；「相似」既不再必然指向抄襲，亦不再必然證明創作。</p></div>
+      <div class="card rv" style="--d:4">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M7 7l-3 6a4 4 0 0 0 6 0l-3-6M17 7l-3 6a4 4 0 0 0 6 0l-3-6"/></svg>
+        <span class="k">觀察三</span><h3>權利界限之模糊</h3>
+        <p>作品與素材之邊界不易辨識，侵權風險隨之上升；技術先行，法律須於其社會運作樣態明朗後作出回應。</p></div>
+    </div>
+    <p class="lede rv" style="--d:5;margin-top:16px"><b>由此引出本文之核心問題：</b>在 AI 介入之下，使用者於創作流程中所作之選擇、取捨與安排，是否足以支撐原創性之成立？其界限應如何劃定？</p>
+    <p class="cite rv" style="--d:6">口試本第一章第一節，頁 4–5；European Parliament, <i>Generative AI and Copyright</i> (2025)；Stanford HAI, <i>AI Index Report 2025</i>；Gao et al. (2023)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 04 · 第一章：研究設計 ═══════════ -->
+<section class="slide" data-ch="1" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 1<span class="zh">研究對象・方法・範圍</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">研究設計：<span class="thin">觀察單位之轉換</span></h1>
+    <div class="band rv" style="--d:1">本文之分析單位並非「是否使用 AI」此一二分，而係<span class="y">「人機互動之創作流程」</span>——即使用者透過提示、參數、素材、迭代與後製參與內容生成之全過程。</div>
+    <div class="cols c2">
+      <div class="card rv" style="--d:2"><span class="k">方法</span><h3>三條研究進路</h3>
+        <ul class="clean">
+          <li><b>流程之類型化</b>——比較「僅提示觸發、反覆迭代、大幅後製、人機協作」四種模式下之實質控制範圍。</li>
+          <li><b>比較法之檢驗</b>——以美國、歐盟、日本與中國之規範及案例，檢驗判準之可行性。</li>
+          <li><b>制度之分析</b>——連結平台商業模式與權利義務配置，評估透明化、標示、授權與責任分配等工具。</li>
+        </ul></div>
+      <div class="card tint rv" style="--d:3"><span class="k">範圍</span><h3>有意識之限縮</h3>
+        <ul class="clean">
+          <li>核心軸線固定於原創性之<b>概念內涵與界線劃定</b>。</li>
+          <li>訓練資料爭議、一般侵權責任、個資與消保議題——原則上不予展開，僅於必要連動處輔助說明。</li>
+          <li>作品類型以<b>文字與圖像生成</b>為例，據以抽取可一般化之判斷要素。</li>
+        </ul></div>
+    </div>
+    <p class="lede rv" style="--d:4;margin-top:14px">研究之目標，在於「可保護性」與「可利用性」之間建立清楚之區辨——避免過度保護壓縮公共領域，同時增進各方對規範適用之<b>可預期性</b>。</p>
+    <p class="cite rv" style="--d:5">口試本第一章第二、三節，頁 5–8；經濟部智慧財產局，智著字第 11310015440 號。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 05 · 第二章：原創性之構造（門檻圖解） ═══════════ -->
+<section class="slide" data-ch="2" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 2<span class="zh">原創性之概念與判斷基準</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">原創性之構造：<span class="thin">作為保護門檻之雙重要件</span></h1>
+    <div class="rv" style="--d:1;margin:10px 0 6px">
+      <!-- 門檻構造圖：一切表達 → 兩道要件 → 受保護／公共領域 -->
+      <svg viewBox="0 0 1120 300" style="width:100%;height:auto;display:block" role="img" aria-label="原創性門檻構造圖">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 0L10 5L0 10z" fill="#660099"/></marker></defs>
+        <rect x="8" y="40" width="250" height="220" rx="16" fill="#F6EFFA" stroke="#E3D6EE" stroke-width="2"/>
+        <text x="133" y="78" text-anchor="middle" font-size="21" font-weight="900" fill="#3D005C">一切智力成果</text>
+        <text x="133" y="112" text-anchor="middle" font-size="15" fill="#6B6176">思想・概念・方法</text>
+        <text x="133" y="138" text-anchor="middle" font-size="15" fill="#6B6176">事實・常用元素</text>
+        <text x="133" y="164" text-anchor="middle" font-size="15" fill="#6B6176">功能必然・場景必然</text>
+        <text x="133" y="196" text-anchor="middle" font-size="16" font-weight="700" fill="#660099">＋ 具體之表達</text>
+        <line x1="258" y1="150" x2="330" y2="150" stroke="#660099" stroke-width="3" marker-end="url(#ah)"/>
+        <rect x="336" y="30" width="230" height="112" rx="14" fill="#fff" stroke="#660099" stroke-width="2.5"/>
+        <text x="451" y="66" text-anchor="middle" font-size="19" font-weight="900" fill="#3D005C">要件一　獨立創作</text>
+        <text x="451" y="94" text-anchor="middle" font-size="14" fill="#2A2331">非依附或重製他人表達</text>
+        <text x="451" y="118" text-anchor="middle" font-size="14" fill="#660099" font-weight="700">≠ 專利法上之新穎性</text>
+        <rect x="336" y="158" width="230" height="112" rx="14" fill="#fff" stroke="#660099" stroke-width="2.5"/>
+        <text x="451" y="194" text-anchor="middle" font-size="19" font-weight="900" fill="#3D005C">要件二　最低創作性</text>
+        <text x="451" y="222" text-anchor="middle" font-size="14" fill="#2A2331">可辨識之自由選擇與安排</text>
+        <text x="451" y="246" text-anchor="middle" font-size="14" fill="#660099" font-weight="700">美學不歧視・價值不審查</text>
+        <line x1="566" y1="86" x2="646" y2="120" stroke="#660099" stroke-width="3" marker-end="url(#ah)"/>
+        <line x1="566" y1="214" x2="646" y2="180" stroke="#660099" stroke-width="3" marker-end="url(#ah)"/>
+        <rect x="652" y="40" width="220" height="220" rx="16" fill="#660099"/>
+        <rect x="652" y="40" width="220" height="10" fill="#FFCC33"/>
+        <text x="762" y="130" text-anchor="middle" font-size="22" font-weight="900" fill="#fff">受保護之表達</text>
+        <text x="762" y="164" text-anchor="middle" font-size="14.5" fill="#E4D2F2">保護厚薄隨創作</text>
+        <text x="762" y="188" text-anchor="middle" font-size="14.5" fill="#E4D2F2">選擇之多寡而定</text>
+        <line x1="872" y1="150" x2="938" y2="150" stroke="#9C8FAB" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#ah)"/>
+        <rect x="944" y="70" width="168" height="160" rx="16" fill="#fff" stroke="#9C8FAB" stroke-width="2" stroke-dasharray="8 6"/>
+        <text x="1028" y="130" text-anchor="middle" font-size="19" font-weight="900" fill="#6B6176">「薄著作」</text>
+        <text x="1028" y="160" text-anchor="middle" font-size="13.5" fill="#6B6176">成立，不必然導出</text>
+        <text x="1028" y="184" text-anchor="middle" font-size="13.5" fill="#6B6176">廣泛之排他</text>
+      </svg>
+    </div>
+    <p class="lede rv" style="--d:2">此一構造隱含兩項對後文至關重要之推論：其一，著作權所保護者為<b>具體之呈現形式</b>，而非題材或構想本身（思想／表達之區分）；其二，門檻之低，係以<b>保護範圍之可限縮</b>作為對價——此即本文「範圍控制」論證之理論支點。</p>
+    <p class="cite rv" style="--d:3">口試本第二章第一節，頁 9–13；著作權法第 3 條第 1 項第 1 款、第 10 條之 1；最高法院 106 年度台上字第 775 號；Kaiser, Song &amp; Frankel, 49 <i>Colum. J.L. &amp; Arts</i> 339 (2026)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 06 · 第二章：我國實務之發展 ═══════════ -->
+<section class="slide" data-ch="2" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 2<span class="zh">我國原創性判斷之發展</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">我國實務之發展：<span class="thin">自個別性論述，至汗水原則之否定</span></h1>
+    <div class="cols c2" style="grid-template-columns:1.18fr 1fr;margin-top:10px">
+      <div class="tl">
+        <div class="ev rv" style="--d:1"><span class="case">最高法院 106 年度台上字第 775 號</span><h4>第一階段　與專利法之區隔</h4>
+          <p>原創性「非如專利法所要求之新穎性」——為其後門檻之降低奠定論述基礎。</p></div>
+        <div class="ev rv" style="--d:2"><span class="case">智慧財產法院 100 年度民著訴字第 36 號</span><h4>第二階段　二分架構之成形</h4>
+          <p>原始性（獨立完成）與創作性（足以表現個性之可區別變化）並列，作品不必前無古人。</p></div>
+        <div class="ev g rv" style="--d:3"><span class="case">司法院新聞稿・蘋果日報照片案（2020.4.28）</span><h4>第三階段　「先排除、後評價」之定型</h4>
+          <p>選景、光線、焦距、快門與瞬間之捕捉，均屬表達選擇；美感與市場價值則與創作性無涉。</p></div>
+        <div class="ev g rv" style="--d:4"><span class="case">智商法院 113 年度刑智上易字第 35 號（2025.1.16）</span><h4>第四階段　汗水原則之明確否定</h4>
+          <p>以程式自動擷取、比對、校正建置資料庫，未能反映選擇與編排之創意者，難認具創作性——與美國 <i>Feist</i>（1991）採相同取向。</p></div>
+      </div>
+      <div>
+        <div class="card tint rv" style="--d:5"><span class="k">對 AI 時代之意涵</span><h3>投入之多寡，無法取代表達之選擇</h3>
+          <p>倘生成結果主要由既定規則、參數或演算法機械導出，而人類於表達層次之自由選擇無從辨識——則<span class="hl">縱使投入龐大之時間與成本，仍可能欠缺原創性</span>。</p></div>
+        <div style="height:14px"></div>
+        <div class="card rv" style="--d:6"><span class="k">關鍵之轉折</span><h3>可操作性繫於「自由選擇之落點」</h3>
+          <p>我國雖採最低門檻，然其可操作性取決於法院能否在理由中<b>指認自由選擇之所在</b>；此一要求，在生成流程黑箱化之後，將更加依賴證明資料之重建。</p></div>
+      </div>
+    </div>
+    <p class="cite rv" style="--d:7">口試本第二章第一節第三項，頁 13–20；<i>Feist Publications v. Rural Tel. Serv.</i>, 499 U.S. 340 (1991)；經濟部智慧財產局〈著作權基本概念〉。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 07 · 第二章：原創性與侵權 ═══════════ -->
+<section class="slide" data-ch="2" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 2<span class="zh">原創性與侵權判斷之關聯</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">層次之區分，<span class="thin">與 AI 所帶來之兩項不對稱</span></h1>
+    <div class="chain rv" style="--d:1;margin-top:12px">
+      <div class="node"><span class="n">層次一</span><h4>門檻——權利客體是否存在</h4><p>欠缺可保護之表達者，即無可被侵害之權利客體。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">層次二</span><h4>範圍——保護延伸至何處</h4><p>比對之前，先抽離不可保護要素，鎖定可保護之核心。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">層次三</span><h4>侵權——利用是否越界</h4><p>接觸可能性與實質近似；量之相似未必侵權，質之相似落於核心方屬可能。</p></div>
+    </div>
+    <div class="cols c2" style="margin-top:18px">
+      <div class="card rv" style="--d:2"><span class="k">不對稱之一</span><h3>不具原創性，不等於沒有侵權風險</h3>
+        <p>某一輸出可能因人類貢獻不足而<b>無法取得保護</b>；同一輸出卻可能因重現他人可保護之表達，而<b>引發侵權責任</b>——於商業利用時尤然。</p>
+        <span class="badge no">保護 ✗</span> <span class="badge no">風險仍在 ✓</span></div>
+      <div class="card rv" style="--d:3"><span class="k">不對稱之二</span><h3>高度相似，不再必然指向抄襲</h3>
+        <p>模型偏好、平台預設與相近提示，可在<b>欠缺接觸關係</b>之情況下產生趨同輸出；舉證之重心，因此移向「輸出如何形成」。</p>
+        <span class="badge part">相似之證明力弱化</span></div>
+    </div>
+    <div class="band rv" style="--d:4;margin-top:16px">本文之方法論回應：將兩者納入同一套<span class="y">「表達抽離—歸責辨識—證明鏈重建」</span>之架構處理。</div>
+    <p class="cite rv" style="--d:5">口試本第二章第一節第四項，頁 20–22；著作權法第 10 條之 1、第 87 條；17 U.S.C. §102(b)；<i>Baker v. Selden</i> (1879)；USCO, <i>Copyright &amp; AI, Part 2</i> (2025)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 08 · 第二章：生成流程之解構（圖解） ═══════════ -->
+<section class="slide" data-ch="2" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 2<span class="zh">AI 生成服務之流程與角色分工</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">生成流程之解構：<span class="thin">各行為者於何一階段，決定何種要素</span></h1>
+    <div class="chain rv" style="--d:1;margin-top:14px">
+      <div class="node">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M7 20h10M12 16v4M7 8h6M7 12h10"/></svg>
+        <span class="n">上游・平台與模型</span><h4>界定可能性空間</h4><p>模型訓練、模板與預設參數屬<b>一般性條件</b>；其對單一輸出之細節，未必具有直接之指向性。</p></div>
+      <div class="arr">→</div>
+      <div class="node">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span class="n">中游・使用者輸入</span><h4>提示・參數・素材</h4><p>自概括之關鍵字，至包含敘事方向與細節限制之具體指令——<b>指向性之差異極大</b>。</p></div>
+      <div class="arr">→</div>
+      <div class="node">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.4" fill="#660099" stroke="none"/><circle cx="15" cy="15" r="1.4" fill="#660099" stroke="none"/><circle cx="15" cy="9" r="1.4" fill="#660099" stroke="none"/></svg>
+        <span class="n">生成・模型運算</span><h4>隨機性與不可重現</h4><p>使用者無從介入內部決策路徑，僅能以外部條件<b>間接影響</b>輸出。</p></div>
+      <div class="arr">→</div>
+      <div class="node em">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM13 6l3 3"/></svg>
+        <span class="n">下游・生成後處理</span><h4>篩選・編修・重組</h4><p><b>最能反映創作判斷之階段</b>——取捨與重構，可使成果顯著有別於單一輸出之直接採用。</p></div>
+    </div>
+    <div class="band rv" style="--d:2;margin-top:18px">判準之重心因此移轉：所應追問者，並非「操作了多少步驟」，而係<span class="y">「是否對具體表達作出可識別且可歸責之選擇」</span>。<small>兩端均應避免：不因系統自動生成而概括否定人類貢獻；亦不因曾輸入指令，即推定其對表達具有充分之控制。</small></div>
+    <p class="cite rv" style="--d:3">口試本第二章第二節第一項，頁 23–25；USCO, <i>Copyright &amp; AI, Part 2</i>, pp. 5–6, 18–24 (2025)；Stanford HAI (2025)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 09 · 第二章：四項指標 ═══════════ -->
+<section class="slide" data-ch="2" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 2<span class="zh">使用者創作貢獻之認定方法</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">使用者貢獻之認定：<span class="thin">四項可操作之觀察指標</span></h1>
+    <div class="cols c2" style="margin-top:12px">
+      <div class="card rv" style="--d:1">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+        <span class="k">指標一</span><h3>提示與條件設定之「指向性」</h3>
+        <p>僅提供風格或題材關鍵字、細節悉由系統填補者，難認具實質控制；能就敘事框架、構圖關係、元素配置提出<b>具體且可驗證之限制</b>，且輸出呈現相應收斂者，較能支持表達選擇之存在。</p></div>
+      <div class="card rv" style="--d:2">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h13M4 12h13M4 17h13"/><path d="M20 5l-2 2 2 2M20 15l-2 2 2 2"/></svg>
+        <span class="k">指標二</span><h3>迭代與版本取捨之「可理由化」</h3>
+        <p>以<b>一貫之表意或審美準則</b>持續調整條件、排除不符版本者，足以反映控制與取捨；反之，大量抽樣後任意擇一，無從據以推認可歸責性。</p></div>
+      <div class="card rv" style="--d:3">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/><path d="M12 20h8"/></svg>
+        <span class="k">指標三</span><h3>後製是否「觸及表達核心」</h3>
+        <p>改寫潤飾、重排結構、跨版本拼接與整體排版，屬可辨識之創作性貢獻；去背、修瑕、提升解析度或套用預設濾鏡，則<b>近於機械性處理</b>，支撐力薄弱。</p></div>
+      <div class="card rv" style="--d:4">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/></svg>
+        <span class="k">指標四</span><h3>創作歷程資料之「可佐證性」</h3>
+        <p>提示紀錄、參數設定、版本序列與編修軌跡，使表達選擇<b>成為可檢驗之事實</b>；於平台高度模板化且欠缺紀錄之情形，應將操作環境對控制範圍之壓縮納入評價。</p></div>
+    </div>
+    <p class="cite rv" style="--d:5">口試本第二章第二節第二項，頁 25–27；USCO Review Board, <i>Théâtre D'opéra Spatial</i> (2023.9.5)；智著字第 11310015440 號；C2PA Technical Specification。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 10 · 第三章：控制密度之光譜 ═══════════ -->
+<section class="slide" data-ch="3" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 3<span class="zh">使用者與 AI 之創作互動模式</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">互動模式之類型化：<span class="thin">一條控制密度之光譜</span></h1>
+    <div class="rv" style="--d:1;margin:14px 0 4px">
+      <svg viewBox="0 0 1120 96" style="width:100%;height:auto;display:block" role="img" aria-label="控制密度光譜">
+        <defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#EDE0F6"/><stop offset=".5" stop-color="#A366C7"/><stop offset="1" stop-color="#660099"/></linearGradient></defs>
+        <rect x="30" y="34" width="1060" height="18" rx="9" fill="url(#gd)"/>
+        <circle cx="120" cy="43" r="15" fill="#fff" stroke="#8F4DB8" stroke-width="4"/>
+        <circle cx="430" cy="43" r="15" fill="#fff" stroke="#8F4DB8" stroke-width="4"/>
+        <circle cx="740" cy="43" r="15" fill="#fff" stroke="#660099" stroke-width="4"/>
+        <circle cx="1010" cy="43" r="16" fill="#FFCC33" stroke="#660099" stroke-width="4"/>
+        <text x="34" y="86" font-size="15" fill="#6B6176">使用者對表達之控制密度：低</text>
+        <text x="1090" y="86" text-anchor="end" font-size="15" font-weight="700" fill="#3D005C">高 —— 愈可能承載可歸責之貢獻</text>
+        <text x="120" y="20" text-anchor="middle" font-size="16" font-weight="900" fill="#3D005C">Ⅰ 模板套用</text>
+        <text x="430" y="20" text-anchor="middle" font-size="16" font-weight="900" fill="#3D005C">Ⅱ 提示迭代</text>
+        <text x="740" y="20" text-anchor="middle" font-size="16" font-weight="900" fill="#3D005C">Ⅲ 素材轉換</text>
+        <text x="1010" y="20" text-anchor="middle" font-size="16" font-weight="900" fill="#3D005C">Ⅳ 生成後重構</text>
+      </svg>
+    </div>
+    <div class="cols c4">
+      <div class="card rv" style="--d:2"><h3 style="margin-top:0">一鍵套用預設效果</h3>
+        <p>依智財局之解釋，卡通化與濾鏡等結果倘僅屬演算法之差異、欠缺創作判斷之介入，不宜因輸出形式改變而推定原創性。</p><span class="badge no">支撐力最弱</span></div>
+      <div class="card rv" style="--d:3"><h3 style="margin-top:0">反覆提示與結果篩選</h3>
+        <p>操作步驟之多寡，不能替代創作性之判斷——提示詞於多數情形，仍停留於題材與概念之層次。</p><span class="badge part">視收斂軌跡而定</span></div>
+      <div class="card rv" style="--d:4"><h3 style="margin-top:0">導入素材進行轉換</h3>
+        <p>涉及雙重評價：對原素材之利用是否觸及重製或改作；轉換之成果是否具備新的原創性。攝影裁判之語彙於此可資類比。</p><span class="badge part">雙重評價線</span></div>
+      <div class="card tint rv" style="--d:5"><h3 style="margin-top:0">改寫、重排與整合</h3>
+        <p>原創性得體現於選擇、編排與重構之個別化安排；惟舉證之要求，亦隨之提高。</p><span class="badge yes">支撐力最強</span></div>
+    </div>
+    <p class="lede rv" style="--d:6;margin-top:12px">類型化之目的，並非為各模式預先貼上「有」或「無」原創性之標籤，而在於建立<b>可共同依循、可提出證據之事實框架</b>。</p>
+    <p class="cite rv" style="--d:7">口試本第三章第一、二節，頁 30–34；智財局〈解釋資料檢索－電子郵件 1140711〉(2025.7.11)；司法院・蘋果日報照片案新聞稿。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 11 · 第三章：爭訟情境之推演 ═══════════ -->
+<section class="slide" data-ch="3" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 3<span class="zh">典型爭訟情境之推演</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">三種典型爭訟情境：<span class="thin">以事實之可描述性，取代外觀之直覺</span></h1>
+    <div class="cols c3" style="margin-top:12px">
+      <div class="card rv" style="--d:1"><span class="k">情境 A・模板化之一鍵輸出</span><h3>關鍵概念：範圍控制</h3>
+        <ul class="clean">
+          <li>先將版型、模板與慣用符號<b>抽離</b>為不可保護要素。</li>
+          <li>再觀察剩餘部分有無個別化之取捨。</li>
+          <li>縱使成立，亦採<b>「成立但窄保護」</b>之處理，防止對通用模板形成事實上之壟斷。</li>
+        </ul>
+        <p style="margin-top:8px;font-size:13px;color:var(--ink-soft)">方法原型：「go票亮」案（112 年度民商訴字第 51 號）——首頁版型不予保護；流程圖之資訊取捨與配置獲得肯認。</p></div>
+      <div class="card rv" style="--d:2"><span class="k">情境 B・多輪提示與版本取捨</span><h3>關鍵概念：收斂軌跡</h3>
+        <ul class="clean">
+          <li><b>提示之輪數僅為行為量</b>，不等同創作性之投入。</li>
+          <li>所應觀察者：是否以一貫之準則排除偏離之輸出，使結構、語氣或構圖<b>可預期地收斂</b>。</li>
+          <li>文字：段落安排與視角之穩定化；圖像：構圖骨架與色彩層次之逐步固定。</li>
+        </ul></div>
+      <div class="card rv" style="--d:3"><span class="k">情境 C・生成後之編修重構</span><h3>關鍵概念：表達核心</h3>
+        <ul class="clean">
+          <li>重寫關鍵段落以改變敘事視角、重排資訊以形成新的論證脈絡、重配元素以改變視覺焦點——<b>觸及核心</b>。</li>
+          <li>更換字體、調整亮度、一鍵套用風格——屬形式處理，支撐力有限。</li>
+        </ul></div>
+    </div>
+    <div class="band rv" style="--d:4;margin-top:14px">三種情境之共同結論：AI 之介入並不要求另造新的原創性標準，而係要求將既有之「最低創作性」，<span class="y">轉譯為可檢驗之事實敘事</span>。</div>
+    <p class="cite rv" style="--d:5">口試本第三章第三節，頁 36–39；智商法院 112 年度民商訴字第 51 號；USCO, <i>Copyright &amp; AI, Part 2</i>, pp. 18–27 (2025)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 12 · 第三章：三層文件 ═══════════ -->
+<section class="slide" data-ch="3" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 3<span class="zh">證據呈現與主張密度</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">本文之提案：<span class="thin">以「三層文件」完成可歸責性之證成</span></h1>
+    <div class="cols c2" style="grid-template-columns:1.3fr 1fr;margin-top:14px">
+      <div class="stack">
+        <div class="layer l1 rv" style="--d:1"><span class="no">第一層</span><h4>生成紀錄</h4><p>提示詞與關鍵參數之版本、各輪輸出之時間戳、版本序列，以及最終採用版本之標記。</p></div>
+        <div class="layer l2 rv" style="--d:2"><span class="no">第二層</span><h4>取捨說明</h4><p>版本淘汰與採用之理由，並指向成果中可對應之位置——使法院得以理解取捨標準如何作用於表達。</p></div>
+        <div class="layer l3 rv" style="--d:3"><span class="no">第三層</span><h4>編修軌跡</h4><p>工作檔、修訂痕跡、段落重排或圖層變更之紀錄——將人工介入定位於表達核心，而非形式調整。</p></div>
+      </div>
+      <div class="card tint rv" style="--d:4"><span class="k">制度目的</span><h3>使爭議成為可驗證之推理鏈</h3>
+        <ul class="clean">
+          <li>使用者之介入<b>是否存在</b>；</li>
+          <li>該介入是否<b>作用於表達</b>；</li>
+          <li>保護範圍應<b>限縮於何處</b>。</li>
+        </ul>
+        <p style="margin-top:10px">此一提案與既有實務相銜接——網頁爭議即係透過公證、版本差異與製作檔，支撐「何人作出何種選擇」之認定；國際上，C2PA 內容憑證正將此類歷程資料予以標準化。</p></div>
+    </div>
+    <p class="cite rv" style="--d:5">口試本第三章第三節之三，頁 38–39；C2PA Technical Specification；Content Authenticity Initiative；民事訴訟法第 342 條以下。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 13 · 第四章：美國 ═══════════ -->
+<section class="slide" data-ch="4" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 4<span class="zh">比較法研究・美國</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">美國：<span class="thin">以人類作者性設定門檻，以登記實務切割客體</span></h1>
+    <div class="cols c3" style="margin-top:12px">
+      <div class="card rv" style="--d:1"><span class="case">Thaler v. Perlmutter, 130 F.4th 1039 (D.C. Cir. 2025)</span>
+        <h3>純自主生成之極端情形</h3>
+        <p>作品由 AI 系統自主生成、無人主張人類創作之投入。法院並未討論 AI 是否具有創造力，而係回到法體系對「author」之結構性理解，維持拒絕登記之處分。</p>
+        <span class="badge no">登記遭拒</span></div>
+      <div class="card rv" style="--d:2"><span class="case">Zarya of the Dawn（USCO, 2023.2.21）</span>
+        <h3>同一作品內之客體切割</h3>
+        <p>漫畫之文字內容，以及圖文之選擇、協調與編排，屬人類貢獻而得為登記標的；Midjourney 所生成之個別圖像，則排除於保護範圍之外。</p>
+        <span class="badge part">部分保護</span></div>
+      <div class="card rv" style="--d:3"><span class="case">Théâtre D'opéra Spatial（Review Board, 2023.9.5）</span>
+        <h3>多輪提示之極限</h3>
+        <p>申請人雖以多輪提示反覆調整，惟最終圖像之具體表達仍主要由系統決定——審查焦點在於「人是否決定了表達之樣貌」，而非「人進行了多少操作」。</p>
+        <span class="badge no">主張遭否定</span></div>
+    </div>
+    <div class="band rv" style="--d:4;margin-top:16px">USCO 於 2025 年報告中定調：是否使用 AI 並非決定性因素；所審查者為人類是否對<span class="y">可保護之表達要素具有創作性之控制</span>——單純之提示詞，多屬指令或構想之傳達，不當然等同作品之具體表達。</div>
+    <p class="cite rv" style="--d:5">口試本第四章第二、三節，頁 41–43、47–48；88 Fed. Reg. 16190 (2023.3.16)；USCO, <i>Copyright &amp; AI, Part 2: Copyrightability</i> (2025.1.29)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 14 · 第四章：歐盟、英國、日本 ═══════════ -->
+<section class="slide" data-ch="4" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 4<span class="zh">比較法研究・歐盟、英國、日本</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">三種制度語言，<span class="thin">指向同一判準核心</span></h1>
+    <div class="cols c3" style="margin-top:12px">
+      <div class="card rv" style="--d:1"><span class="k">歐盟</span><h3>「作者自身之智力創作」</h3>
+        <ul class="clean">
+          <li><i>Infopaq</i>、<i>Painer</i> 至 <i>Cofemel</i>：以「自由且具創作性之選擇」留下個人印記；美學價值不作為要件。</li>
+          <li>2024 年 AI Act（第 50、53 條）之透明與文件義務，雖非著作權法，卻<b>間接降低可歸責性之證明成本</b>。</li>
+          <li>布拉格市法院（2023）：提示詞屬構想層次，且舉證不足，主張遭否定。</li>
+        </ul></div>
+      <div class="card rv" style="--d:2"><span class="k">英國</span><h3>立法擬制與實務之回歸</h3>
+        <ul class="clean">
+          <li>CDPA 1988 第 9 條第 3 項：電腦生成著作歸於「作成必要安排之人」——罕見之立法擬制。</li>
+          <li><i>Getty Images v Stability AI</i>：訴訟重心落於訓練與輸出之<b>可證明行為</b>與地域連結——擬制條文並未免除證據之工作。</li>
+        </ul></div>
+      <div class="card rv" style="--d:3"><span class="k">日本</span><h3>「思想或感情之創作性表現」</h3>
+        <ul class="clean">
+          <li>文化廳（2024）：AI 定位為工具；純自動產出者，通常不構成著作。</li>
+          <li>惟應注意：使用者之創作性常以<b>選擇、編排與重構</b>之間接形式外化——判例尚待累積，較適合作為我國行政指引之參照。</li>
+        </ul></div>
+    </div>
+    <p class="cite rv" style="--d:4">口試本第四章第二、三節，頁 43–45、48–49；C-5/08 <i>Infopaq</i>；C-145/10 <i>Painer</i>；C-683/17 <i>Cofemel</i>；Regulation (EU) 2024/1689；[2023] EWHC 3090 (Ch)；LG Hamburg 310 O 227/23。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 15 · 第四章：中國大陸 ═══════════ -->
+<section class="slide" data-ch="4" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 4<span class="zh">比較法研究・中國大陸</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">中國大陸：<span class="thin">自寬鬆肯認至門檻拉回</span></h1>
+    <div class="chain rv" style="--d:1;margin-top:14px">
+      <div class="node"><span class="n">2019・深圳南山</span><h4>Dreamwriter 案</h4><p>財經文章成立作品，權利歸於組織產製流程之企業。此一「以流程控制安排歸屬」之直覺，<b>存在滑向汗水原則之風險</b>。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">2023・北京互聯網法院</span><h4>「AI 生成圖第一案」</h4><p>（2023）京 0491 民初 11279 號：提示詞、參數與反覆取捨構成智力投入，圖像獲肯認為美術作品。其論證<b>並非承認 AI 之作者性</b>，而係將作者性安置於使用者之介入事實。</p></div>
+      <div class="arr">→</div>
+      <div class="node em"><span class="n">2025・張家港／上海黃浦</span><h4>門檻之拉回</h4><p>張家港案：僅有構思與提示、欠缺表達層次個性化選擇之證據，主張遭否定。上海黃浦案：無序羅列之提示詞屬<b>思想或指令之集合</b>，其本身不構成作品。</p></div>
+    </div>
+    <div class="band rv" style="--d:2;margin-top:18px">2025 年兩案之警示意義，實大於「第一案」本身：倘「提示詞加參數」被過度寬鬆地等同於表達之創作，<span class="y">思想與表達之區分將遭侵蝕</span>——對構想之描述將被誤轉為對表達之排他，公共領域因而受到壓縮。</div>
+    <p class="cite rv" style="--d:3">口試本第四章第二節，頁 45–47；（2019）粵 0305 民初 14010 號（Dreamwriter）；（2023）京 0491 民初 11279 號；2025 年張家港法院、上海黃浦法院相關判決（以正式判決全文為準）。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 16 · 第四章：比較分析 ═══════════ -->
+<section class="slide" data-ch="4" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 4<span class="zh">各法域比較分析與啟示</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">立場看似分歧，<span class="thin">操作正在收斂</span></h1>
+    <table class="cmp rv" style="--d:1;margin-top:12px">
+      <tr><th style="width:90px">法域</th><th>判準之語彙</th><th>提示詞之定位</th><th>主要制度工具</th></tr>
+      <tr><td class="f">美國</td><td>人類作者性；對可保護要素之創作性控制</td><td>多屬指令或構想之傳達</td><td>登記揭露；保護客體之切割 <span class="s">（Zarya 模式）</span></td></tr>
+      <tr><td class="f">歐盟</td><td>作者自身之智力創作；自由且具創作性之選擇</td><td>構想層次 <span class="s">（布拉格案）</span></td><td>AI Act 之透明義務，間接支援歸責之證明</td></tr>
+      <tr><td class="f">日本</td><td>思想或感情之創作性表現</td><td>AI 為工具；回到人之表現</td><td>行政整理先行；判例尚待累積</td></tr>
+      <tr><td class="f">中國</td><td>個性化選擇，佐以可檢驗之證據</td><td>原則上屬思想層次 <span class="s">（2025 年之收斂）</span></td><td>個案裁判密集回應；要件化進行中</td></tr>
+    </table>
+    <div class="cols c3" style="margin-top:16px">
+      <div class="card tint rv" style="--d:2"><span class="k">啟示一</span><h3>可歸責性之證據化</h3><p>揭露、切割與透明義務，均為使可歸責性成為<b>可證明之事實</b>而服務。</p></div>
+      <div class="card tint rv" style="--d:3"><span class="k">啟示二</span><h3>提示詞回到二分架構</h3><p>除非其本身已構成可保護之文字表達，提示詞應定位於<b>思想層次</b>。</p></div>
+      <div class="card tint rv" style="--d:4"><span class="k">啟示三</span><h3>成立與範圍之連動</h3><p>縱令跨越門檻，保護仍應<b>限縮於使用者實際形成之選擇與編排</b>。</p></div>
+    </div>
+    <p class="cite rv" style="--d:5">口試本第四章第三節，頁 47–51；USCO, <i>Part 2</i>, pp. 28–31；文化廳（2024）；European Commission, <i>GPAI Code of Practice</i> (2025)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 17 · 第五章：平台象限圖 ═══════════ -->
+<section class="slide" data-ch="5" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 5<span class="zh">平台商業模式概述</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">商業模式，<span class="thin">爭議事實結構之預先配置</span></h1>
+    <div class="cols c2" style="grid-template-columns:1.35fr 1fr;margin-top:8px">
+      <div class="rv" style="--d:1">
+        <!-- 平台類型象限圖 -->
+        <svg viewBox="0 0 640 430" style="width:100%;height:auto;display:block" role="img" aria-label="平台商業模式象限圖">
+          <rect x="330" y="30" width="290" height="180" fill="#FFF3CC" rx="12"/>
+          <text x="608" y="56" text-anchor="end" font-size="14" font-weight="700" fill="#8A6A00">可歸責性較易證明之區域</text>
+          <line x1="70" y1="390" x2="620" y2="390" stroke="#3D005C" stroke-width="3"/>
+          <line x1="70" y1="390" x2="70" y2="20" stroke="#3D005C" stroke-width="3"/>
+          <path d="M620 390l-12 -6v12zM70 20l-6 12h12z" fill="#3D005C"/>
+          <text x="345" y="422" text-anchor="middle" font-size="16" font-weight="700" fill="#3D005C">使用者控制介面之開放程度 →</text>
+          <text x="34" y="205" text-anchor="middle" font-size="16" font-weight="700" fill="#3D005C" transform="rotate(-90 34 205)">生成歷程之留存程度 →</text>
+          <circle cx="165" cy="320" r="17" fill="#8F4DB8"/>
+          <text x="165" y="356" text-anchor="middle" font-size="16.5" font-weight="900" fill="#3D005C">Ⅰ 一鍵輸出型</text>
+          <circle cx="360" cy="215" r="17" fill="#8F4DB8"/>
+          <text x="360" y="251" text-anchor="middle" font-size="16.5" font-weight="900" fill="#3D005C">Ⅱ 工具整合型</text>
+          <circle cx="520" cy="95" r="19" fill="#660099" stroke="#FFCC33" stroke-width="5"/>
+          <text x="520" y="135" text-anchor="middle" font-size="16.5" font-weight="900" fill="#3D005C">Ⅲ 工作流程型</text>
+          <circle cx="470" cy="300" r="17" fill="#fff" stroke="#8F4DB8" stroke-width="4"/>
+          <text x="470" y="336" text-anchor="middle" font-size="16.5" font-weight="900" fill="#3D005C">Ⅳ 模型供給型</text>
+          <text x="470" y="278" text-anchor="middle" font-size="12.5" fill="#6B6176">（取決於下游治理）</text>
+        </svg>
+      </div>
+      <div>
+        <div class="card rv" style="--d:2"><span class="k">分類之標準</span><h3>不是定價，而是流程之組織方式</h3>
+          <p>平台如何組織生成流程、如何配置權利與責任，決定了三項事實：使用者之控制是否可歸責、過程資料是否被留存、條款如何安排利用與風險。<b>平台之設計，直接影響「何者得被認定為創作」。</b></p></div>
+        <div style="height:12px"></div>
+        <div class="card rv" style="--d:3"><span class="k">對應之訴訟現實</span><h3>類型與爭點之對應</h3>
+          <p>一鍵輸出型之再現風險——<span class="case">Disney v. Midjourney, 2:25-cv-05275 (C.D. Cal. 2025)</span>；模型供給型之紀錄保存攻防——<span class="case">NYT v. Microsoft &amp; OpenAI, 1:23-cv-11195 (S.D.N.Y.)</span>。</p></div>
+      </div>
+    </div>
+    <p class="cite rv" style="--d:4">口試本第五章第一節，頁 51–54；USCO, <i>Part 2</i>, pp. 32–41；In re: OpenAI ChatGPT Litigation, MDL No. 3083 (N.D. Cal.)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 18 · 第五章：兩條軌道與程序鏈 ═══════════ -->
+<section class="slide" data-ch="5" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 5<span class="zh">使用者之權利義務・商業模式之影響</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">兩條軌道之分離，<span class="thin">與一條程序鏈之接合</span></h1>
+    <div class="cols c2" style="margin-top:12px">
+      <div class="card rv" style="--d:1">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M8 3v18M16 3v18M8 8h8M8 16h8"/></svg>
+        <span class="k">軌道之分離</span><h3>「契約上可利用」不等於「著作權上可主張」</h3>
+        <ul class="clean">
+          <li>平台條款先行配置商用權與再授權限制——可能在權利成立與否尚未確定之前，即決定使用者之實際地位。</li>
+          <li>條款之正當邊界應以<b>可歸責性</b>校準：平台不應將「非使用者可歸責之部分」，透過條款轉化為排他之資產。</li>
+          <li>輸入與輸出用於模型訓練者，應採<b>目的限制並提供退出選擇</b>——借鏡 DSM 指令 TDM 保留機制之制度語言。</li>
+        </ul></div>
+      <div class="card tint rv" style="--d:2">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="12" r="3"/><circle cx="6" cy="18" r="3"/><path d="M9 6h9M9 18h9M6 9v6"/></svg>
+        <span class="k">程序之接合</span><h3>可追溯——可主張——可救濟</h3>
+        <ul class="clean">
+          <li><b>可追溯</b>：最低限度之歷程紀錄（提示、參數、版本序列、時間戳）。</li>
+          <li><b>可主張</b>：通知與反通知均應具體化——指認受保護之要素與比對理由。</li>
+          <li><b>可救濟</b>：理由說明、內部申訴、外部調處；以我國著作權法第 90 條之 4 以下為程序基座，參照 DSA 第 16 至 21 條與 DMCA 第 512 條。</li>
+        </ul></div>
+    </div>
+    <div class="band rv" style="--d:3;margin-top:14px">臺灣之制度座標：智財局函釋定錨 → 行政院（2023.10.3）與文化部之生成式 AI 指引 → <span class="y">2025 年 12 月 23 日《人工智慧基本法》三讀通過</span>——「可控、可揭露、可稽核」已成為治理之共同語彙，本文之證據結構主張與此方向一致。</div>
+    <p class="cite rv" style="--d:4">口試本第五章第二、三節，頁 54–60；OpenAI Terms of Use (2026.1.1)；Directive (EU) 2019/790, arts. 3–4；Regulation (EU) 2022/2065, arts. 16–21；17 U.S.C. §512。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 19 · 第六章：三階段審查程序 ═══════════ -->
+<section class="slide" data-ch="6" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 6<span class="zh">研究結論——本文之核心產出</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">結論：<span class="thin">三階段之審查程序，使可歸責性得以寫入裁判理由</span></h1>
+    <div class="chain rv" style="--d:1;margin-top:14px">
+      <div class="node"><span class="n">階段一</span><h4>介入層次之辨識</h4><p>先行指認所主張保護之<b>表達要素</b>（敘事結構、段落節奏、構圖關係、元素配置），並排除思想、概念與功能必然之部分——不以「曾輸入提示」替代作者性之證明。</p></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="n">階段二</span><h4>控制密度之評價</h4><p>版本之淘汰是否具可理由化之準則；局部改寫、跨版本拼接與重排配置，是否<b>觸及表達之核心</b>。僅於預設模板內點選套用者，通常不足以支撐最低創作性。</p></div>
+      <div class="arr">→</div>
+      <div class="node em"><span class="n">階段三</span><h4>證明鏈之重建</h4><p>以三層文件重建「介入—控制—表達」之因果鏈，<b>排除成果僅屬平台常態輸出之可能</b>。欠缺資料者，即欠缺可供評價之事實基礎。</p></div>
+    </div>
+    <div class="cols c2" style="margin-top:16px">
+      <div class="card rv" style="--d:2"><span class="k">主要發現</span><h3>一場「創作歸責結構」之重整</h3>
+        <p>生成式 AI 之衝擊，並非門檻標準之改變，而係<span class="hl">作品形成因素之分散</span>。三階段程序並非另創標準，而係將「獨立創作與最低創作性」轉譯為可逐步指認、逐步驗證之審查步驟。</p></div>
+      <div class="card rv" style="--d:3"><span class="k">體系之銜接</span><h3>類比支點均存在於既有裁判之中</h3>
+        <p>攝影著作之「表達選擇」（選景、構圖、光影），對應 AI 之提示限制與後製重構；編輯著作之「選擇與編排」，對應多版本之取捨與整合——<b>無須破壞既有體系之一致性</b>。</p></div>
+    </div>
+    <p class="cite rv" style="--d:4">口試本第六章第一節，頁 60–64；司法院・蘋果日報照片案新聞稿；113 年度刑智上易字第 35 號；USCO, <i>Part 2</i> (2025)。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 20 · 第六章：規範建議 ═══════════ -->
+<section class="slide" data-ch="6" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 6<span class="zh">對著作權法與原創性認定之法律建議</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">規範建議：<span class="thin">不變動基本原則，補齊方法與配套</span></h1>
+    <div class="cols c3" style="margin-top:12px">
+      <div class="card rv" style="--d:1"><span class="num">01</span><h3>成立，但窄保護</h3>
+        <p>門檻維持低標；於範圍階段嚴格控制——平台預設、模型傾向與公共素材一律抽離，防止保護之外溢。</p></div>
+      <div class="card rv" style="--d:2"><span class="num">02</span><h3>舉證責任之配置</h3>
+        <p>主張者負初步具體化之責任；關鍵資料在平台端者，善用文書提出命令與證據保全；無正當理由拒不提出者，得為證明妨礙之不利推定。</p></div>
+      <div class="card rv" style="--d:3"><span class="num">03</span><h3>行政指引之要素清單</h3>
+        <p>由智財局以指引將「可歸責之表達選擇」轉譯為表達要素、介入行為與證據資料之三層清單，提供主張與抗辯之共同語彙。</p></div>
+      <div class="card rv" style="--d:4"><span class="num">04</span><h3>生成過程之可追溯</h3>
+        <p>平台提供版本管理與歷程匯出；商業利用者負保存之注意義務。以「揭露生成事實」取代「否定生成成果」。</p></div>
+      <div class="card rv" style="--d:5"><span class="num">05</span><h3>制度之功能分工</h3>
+        <p>著作權法處理可保護表達與範圍；契約處理利用與風險分攤；消保與個資法制處理市場秩序——<b>不以權利之擴張回應治理之需求</b>。</p></div>
+      <div class="card tint rv" style="--d:6"><span class="k">共同落點</span><h3>使原則落於個案</h3>
+        <p>不以「AI 之參與」作為肯否之標籤；不以保護之擴張換取秩序；而以可追溯、可揭露、可稽核之流程，使可歸責性在個案中得以驗證。</p></div>
+    </div>
+    <p class="cite rv" style="--d:7">口試本第六章第二節，頁 64–72；<i>Feist</i> (1991)；民事訴訟法第 342 條以下；智慧財產案件審理法第 10、19 條；Regulation (EU) 2024/1689, art. 50。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 21 · 法律職業之角色 ═══════════ -->
+<section class="slide" data-ch="6" data-time="≈1.5分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Chapter 6<span class="zh">延伸——法律職業社群之行動方案</span></span><span class="tchip">≈ 1.5 分</span></div>
+    <h1 class="rv" style="--d:0">法界之展望：<span class="thin">三種角色，各有可立即著手之工作</span></h1>
+    <div class="cols c3" style="margin-top:12px">
+      <div class="card rv" style="--d:1">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h4"/></svg>
+        <span class="k">律師</span><h3>將可歸責性轉化為訴訟技藝</h3>
+        <ul class="clean">
+          <li>採三段式之主張結構：界定標的、對應介入事實、自我限縮範圍——明示不主張之公共元素，反而強化主張之可信度。</li>
+          <li>於爭議發生之前，輔導客戶建立三層文件之留存習慣。</li>
+          <li>通知與反通知均予具體化，拒絕概括式之指控。</li>
+        </ul></div>
+      <div class="card rv" style="--d:2">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M7 7l-3 6a4 4 0 0 0 6 0l-3-6M17 7l-3 6a4 4 0 0 0 6 0l-3-6"/></svg>
+        <span class="k">法官</span><h3>維持層次，警惕兩種直覺</h3>
+        <ul class="clean">
+          <li>堅持「先排除、後評價」，並將「自由選擇之落點」寫入判決理由。</li>
+          <li>警惕直覺之一：完成度高，遂推定創作存在；直覺之二：曾使用 AI，遂概括否定創作。</li>
+          <li>以文書提出命令、證據保全與專家協助，對沖平台端之資訊不對稱——<b>程序工具是實體判斷之前提</b>。</li>
+        </ul></div>
+      <div class="card rv" style="--d:3">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="k">立法者與主管機關</span><h3>標準化，而非一體化</h3>
+        <ul class="clean">
+          <li>推動生成歷程資料之基本欄位標準，以及輸出標示之通用口徑。</li>
+          <li>以既有第 90 條之 4 以下為程序基座，補足理由說明與救濟路徑。</li>
+          <li>保留商業模式差異化之創新空間——以共同治理，取代單方之承擔。</li>
+        </ul></div>
+    </div>
+    <p class="cite rv" style="--d:4">口試本第六章第二、三節，頁 68–80；著作權法第 90 條之 4 至第 90 條之 12；行政院生成式 AI 參考指引（2023.10.3）；《人工智慧基本法》（2025.12.23 三讀）。</p>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 22 · 結語 ═══════════ -->
+<section class="slide" data-ch="6" data-time="≈2分">
+  <div class="inner">
+    <div class="top"><span class="tick"></span><span class="eyebrow">Conclusion<span class="zh">結語——技術變遷與歸責結構之重寫</span></span><span class="tchip">≈ 2 分</span></div>
+    <h1 class="rv" style="--d:0">歷次技術衝擊之下，法律所重寫者並非禁令，<span class="thin">而係歸責</span></h1>
+    <div class="rv" style="--d:1;margin:10px 0 2px">
+      <!-- 技術與法律回應之歷史軸 -->
+      <svg viewBox="0 0 1120 118" style="width:100%;height:auto;display:block" role="img" aria-label="技術衝擊與法律回應之歷史軸">
+        <line x1="40" y1="58" x2="1080" y2="58" stroke="#EDE0F6" stroke-width="8"/>
+        <circle cx="130" cy="58" r="13" fill="#fff" stroke="#660099" stroke-width="4"/>
+        <circle cx="440" cy="58" r="13" fill="#fff" stroke="#660099" stroke-width="4"/>
+        <circle cx="750" cy="58" r="13" fill="#fff" stroke="#660099" stroke-width="4"/>
+        <circle cx="1020" cy="58" r="15" fill="#FFCC33" stroke="#660099" stroke-width="4"/>
+        <text x="130" y="30" text-anchor="middle" font-size="17" font-weight="900" fill="#3D005C">攝影術</text>
+        <text x="130" y="94" text-anchor="middle" font-size="13.5" fill="#6B6176">回應：表達選擇之肯認</text>
+        <text x="440" y="30" text-anchor="middle" font-size="17" font-weight="900" fill="#3D005C">資料庫與大數據</text>
+        <text x="440" y="94" text-anchor="middle" font-size="13.5" fill="#6B6176">回應：汗水原則之否定（Feist）</text>
+        <text x="750" y="30" text-anchor="middle" font-size="17" font-weight="900" fill="#3D005C">個資與資安治理</text>
+        <text x="750" y="94" text-anchor="middle" font-size="13.5" fill="#6B6176">回應：可揭露、可稽核之程序規範</text>
+        <text x="1020" y="30" text-anchor="middle" font-size="17" font-weight="900" fill="#3D005C">生成式 AI</text>
+        <text x="1020" y="94" text-anchor="middle" font-size="13.5" font-weight="700" fill="#660099">本文：可歸責之表達選擇</text>
+      </svg>
+    </div>
+    <div class="cols c2" style="grid-template-columns:1fr 1.15fr;margin-top:10px">
+      <div class="card tint rv" style="--d:2"><span class="k">對可能質疑之預先回應</span>
+        <ul class="clean" style="margin-top:8px">
+          <li><b>「此是否變相提高門檻？」</b>——否。門檻仍為最低創作性；所改變者，係將其證據化，避免以外觀推測過程。</li>
+          <li><b>「撰寫提示詞亦屬辛勞。」</b>——勞力並不等同表達（<i>Feist</i>）；辛勞可由契約與市場回報，無須以著作權之壟斷作為對價。</li>
+          <li><b>「法院是否有能力操作？」</b>——攝影與編輯著作之既有語彙即可類比；文書提出命令等程序工具本已存在，所欠缺者僅為自覺之運用。</li>
+        </ul></div>
+      <div>
+        <ol class="creed" style="margin-top:4px">
+          <li class="rv" style="--d:3">著作權所回應者，並非機器之能力——工具之使用本身，既不創設權利，亦不剝奪權利；其所獎勵者，始終是可被指認之人類選擇。</li>
+          <li class="rv" style="--d:4">保護應與貢獻相稱：過度之保護將壟斷公共領域，過度之否定則削弱創作之誘因——法律應平等地對待每一位創作者與使用者。</li>
+          <li class="rv" style="--d:5">於生成過程不透明之條件下，程序與證據構成實體判斷之前提——可追溯，方有可歸責；可歸責，方有可保護。</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 23 · 結尾 ═══════════ -->
+<section class="slide cover" data-time="">
+  <div class="inner">
+    <p class="school rv" style="--d:0">東吳大學法學院暨法律學系｜人工智慧服務與使用者間著作原創性之衝擊研析</p>
+    <h1 class="rv" style="--d:1">謝謝聆聽，敬請指教</h1>
+    <p class="sub rv" style="--d:2">報告完畢，懇請各位委員不吝賜正</p>
+    <div class="who rv" style="--d:3">
+      <div><span>研究生</span><b>許郁欣</b></div>
+      <div><span>指導教授</span><b>林冠佑 教授</b></div>
+      <div><span>口試委員</span><b>余啟民 教授　葉奇鑫 教授</b></div>
+      <div><span>口試日期</span><b>2026 年 7 月 8 日</b></div>
+    </div>
+    <p class="rv" style="--d:5;margin-top:32px;font-size:12px;color:#9C8FAB;line-height:1.9">主要文獻：USCO, <i>Copyright &amp; AI, Part 2</i> (2025)｜<i>Thaler v. Perlmutter</i>, 130 F.4th 1039 (D.C. Cir. 2025)｜<i>Feist</i>, 499 U.S. 340 (1991)｜<i>Infopaq</i>／<i>Painer</i>／<i>Cofemel</i>（CJEU）｜文化廳〈AIと著作権に関する考え方〉(2024)｜（2023）京 0491 民初 11279 號｜最高法院 106 台上 775｜智商法院 113 刑智上易 35・112 民商訴 51｜智著字第 11310015440 號｜《人工智慧基本法》(2025)</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ═══ 導航 ═══ -->
+<button class="nav" id="prev" aria-label="上一頁">‹</button>
+<button class="nav" id="next" aria-label="下一頁">›</button>
+<div id="bar"><i></i></div>
+<div id="pg"></div>
+<div id="hint">← → 翻頁</div>
+
+<script>
+/* 翻頁引擎：新增或刪除投影片區塊不需修改此處 */
+const slides=[...document.querySelectorAll('.slide')];
+const sps=[...document.querySelectorAll('#spine .sp')];
+let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1))||1)-1));
+function show(n){
+  i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  const ch=slides[i].dataset.ch||'';
+  sps.forEach(sp=>sp.classList.toggle('on',sp.dataset.ch===ch));
+  document.querySelector('#bar i').style.width=((i+1)/slides.length*100)+'%';
+  document.getElementById('pg').textContent=String(i+1).padStart(2,'0')+' / '+slides.length;
+  location.hash=i+1;
+}
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1);}
+  if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
+  if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+});
+sps.forEach(sp=>sp.onclick=()=>{const t=slides.findIndex(s=>s.dataset.ch===sp.dataset.ch);if(t>-1)show(t);});
+show(i);
+</script>
+</body>
+</html>
