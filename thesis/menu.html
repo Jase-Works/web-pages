@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>碩士論文口試簡報</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif; background: #0A0F1F; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.menu { text-align: center; color: white; }
+.menu h1 { font-size: 28px; margin-bottom: 8px; }
+.menu p { color: rgba(255,255,255,0.5); margin-bottom: 24px; font-size: 16px; }
+.menu a { display: block; padding: 16px 32px; margin: 12px 0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: white; text-decoration: none; font-size: 18px; transition: all 0.2s; cursor: pointer; }
+.menu a:hover { background: rgba(30,166,114,0.15); border-color: #1EA672; }
+.downloads { display: flex; gap: 8px; margin: -6px 0 12px 0; }
+.downloads a { font-size: 13px; padding: 8px 14px; flex: 1; text-align: center; }
+hr { border: none; border-top: 1px solid rgba(255,255,255,0.15); margin: 20px 0; }
+#content-frame { display: none; width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 9999; }
+</style>
+</head>
+<body>
+<div class="menu" id="menu">
+  <h1>🔒 碩士論文口試簡報</h1>
+  <p>請點選下面簡報進入</p>
+  <a onclick="loadPage('v7.html')">林志明-口試簡報</a>
+  <div class="downloads">
+    <a href="林志明_口試本.pdf" download>📥 口試本(PDF)</a>
+    <a href="林志明_口試簡報.pdf" download>📥 簡報(PDF)</a>
+  </div>
+  <hr>
+  <a onclick="loadPage('hsu.html')">許郁欣-口試簡報</a>
+  <div class="downloads">
+    <a href="許郁欣_口試本.pdf" download>📥 口試本(PDF)</a>
+    <a href="許郁欣_口試簡報.pdf" download>📥 簡報(PDF)</a>
+  </div>
+</div>
+<iframe id="content-frame"></iframe>
+<script>
+function loadPage(url) {
+  document.getElementById('menu').style.display = 'none';
+  var frame = document.getElementById('content-frame');
+  frame.src = url;
+  frame.style.display = 'block';
+}
+</script>
+</body>
+</html>
