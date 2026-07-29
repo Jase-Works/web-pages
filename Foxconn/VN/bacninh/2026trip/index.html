@@ -309,7 +309,7 @@ body {
 .attachment-item:hover .attachment-delete { opacity: 1; }
 .attachment-delete:hover { color: #ef4444; }
 .attachment-preview {
-  display: none;
+  display: block;
   padding: 16px;
   background: rgba(15,23,42,0.4);
   border-top: 1px solid rgba(148,163,184,0.08);
@@ -518,17 +518,35 @@ body {
     <div class="attachment-item" data-filename="VN-SKD.png">
       <div class="attachment-header" onclick="toggleAttachment(this)">
         <div class="attachment-header-left">
-          <span class="attachment-toggle">▶</span>
+          <span class="attachment-toggle open">▼</span>
           <span class="attachment-name" onclick="event.stopPropagation()">行程規劃表</span>
         </div>
         
       </div>
-      <div class="attachment-preview">
+      <div class="attachment-preview open">
         <img src="VN-SKD.png" alt="行程規劃表" onclick="window.open(this.src)">
       </div>
     </div>
   </div>
 </div>
 
+<script>
+function toggleAttachment(header) {
+  const preview = header.nextElementSibling;
+  const toggle = header.querySelector('.attachment-toggle');
+  const isOpen = preview.classList.contains('open');
+  if (isOpen) {
+    preview.classList.remove('open');
+    preview.style.display = 'none';
+    toggle.classList.remove('open');
+    toggle.textContent = '▶';
+  } else {
+    preview.classList.add('open');
+    preview.style.display = 'block';
+    toggle.classList.add('open');
+    toggle.textContent = '▼';
+  }
+}
+</script>
 </body>
 </html>
