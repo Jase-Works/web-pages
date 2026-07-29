@@ -405,5 +405,23 @@ body {
 
 </div>
 
+<script>
+function toggleAttachment(header) {
+  const preview = header.nextElementSibling;
+  const toggle = header.querySelector('.attachment-toggle');
+  const isOpen = preview.classList.contains('open');
+  if (isOpen) {
+    preview.classList.remove('open');
+    preview.style.display = 'none';
+    toggle.classList.remove('open');
+    toggle.textContent = '▶';
+  } else {
+    preview.classList.add('open');
+    preview.style.display = 'block';
+    toggle.classList.add('open');
+    toggle.textContent = '▼';
+  }
+}
+</script>
 </body>
 </html>
