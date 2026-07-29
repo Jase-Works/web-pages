@@ -222,7 +222,6 @@ body {
   border-top: 1px solid rgba(148,163,184,0.1);
 }
 
-
 .lang-switcher {
   position: fixed; top: 12px; left: 12px; z-index: 999;
   display: flex; gap: 4px;
@@ -242,27 +241,6 @@ body {
   color: #94a3b8; border-color: #94a3b8;
 }
 
-/* Editable */
-[contenteditable] { outline: none; border-radius: 4px; transition: box-shadow 0.15s; }
-[contenteditable]:hover { box-shadow: 0 0 0 1px rgba(56,189,248,0.3); }
-[contenteditable]:focus { box-shadow: 0 0 0 2px rgba(56,189,248,0.5); background: rgba(56,189,248,0.05); }
-.edit-toolbar {
-  position: fixed; top: 12px; right: 12px; z-index: 999;
-  display: flex; gap: 8px; flex-wrap: wrap;
-}
-.edit-toolbar button {
-  padding: 8px 14px; border-radius: 6px; border: 1px solid rgba(148,163,184,0.3);
-  background: rgba(15,23,42,0.95); color: #94a3b8; font-size: 13px; cursor: pointer;
-  backdrop-filter: blur(8px);
-}
-.edit-toolbar button:hover { background: rgba(56,189,248,0.15); color: #38bdf8; border-color: #38bdf8; }
-.save-indicator {
-  position: fixed; bottom: 16px; right: 16px; padding: 8px 16px;
-  background: rgba(16,185,129,0.9); color: #fff; border-radius: 8px;
-  font-size: 13px; opacity: 0; transition: opacity 0.3s; z-index: 999;
-}
-.save-indicator.show { opacity: 1; }
-
 @media (max-width: 768px) {
   .day-card { grid-template-columns: 1fr; }
   .day-marker { display: flex; align-items: center; gap: 12px; }
@@ -273,31 +251,23 @@ body {
 </head>
 <body>
 
-
 <div class="lang-switcher">
   <a href="index.html">中文</a>
   <a href="vi.html" class="active">Tiếng Việt</a>
 </div>
 
-<div class="edit-toolbar">
-  <button onclick="saveToLocal()">💾 Lưu</button>
-  <button onclick="exportClean()">📥 Xuất HTML</button>
-  <button onclick="resetAll()">🔄 Đặt lại</button>
-</div>
-<div class="save-indicator" id="saveMsg">✅ Đã lưu</div>
-
 <div class="hero">
-  <h1 contenteditable="true">Đoàn đại biểu tỉnh Bắc Ninh thăm Đài Loan</h1>
-  <div class="subtitle" contenteditable="true">Chuyến khảo sát Thành phố Thông minh tỉnh Bắc Ninh, Việt Nam — Storyline</div>
+  <h1>Đoàn đại biểu tỉnh Bắc Ninh thăm Đài Loan</h1>
+  <div class="subtitle">Chuyến khảo sát Thành phố Thông minh tỉnh Bắc Ninh, Việt Nam — Storyline</div>
   <div class="info-badges">
-    <div class="badge"><span class="icon">📅</span><span contenteditable="true"> 11/8/2026 (Thứ Ba) ~ 15/8/2026 (Thứ Bảy)</span></div>
-    <div class="badge"><span class="icon">🌙</span><span contenteditable="true"> 5 ngày 4 đêm</span></div>
-    <div class="badge"><span class="icon">✈️</span><span contenteditable="true"> Đến Cao Hùng・Về từ Đào Viên</span></div>
-    <div class="badge"><span class="icon">👥</span><span contenteditable="true"> 14 người (Quan chức 8 + Trụ sở VN 2 + VNPT 4)</span></div>
+    <div class="badge"><span class="icon">📅</span><span> 11/8/2026 (Thứ Ba) ~ 15/8/2026 (Thứ Bảy)</span></div>
+    <div class="badge"><span class="icon">🌙</span><span> 5 ngày 4 đêm</span></div>
+    <div class="badge"><span class="icon">✈️</span><span> Đến Cao Hùng・Về từ Đào Viên</span></div>
+    <div class="badge"><span class="icon">👥</span><span> 14 người (Quan chức 8 + Trụ sở VN 2 + VNPT 4)</span></div>
   </div>
 </div>
 
-<div class="context-box" contenteditable="true">
+<div class="context-box">
   <strong>⏱ Giới hạn thời gian：</strong>Lịch trình 5 ngày 4 đêm, trừ ngày đầu đến trưa và ngày cuối rời trưa, thời gian công vụ thực tế khoảng <strong>3,5 ngày</strong>. Trừ thêm thời gian di chuyển bằng tàu cao tốc từ Cao Hùng ra Đài Bắc, thời gian làm việc hiệu quả khoảng <strong>3 ngày</strong>. Thiết kế theo nguyên tắc "mật độ cao nhưng không vội vàng", đảm bảo đủ thời gian trao đổi tại mỗi điểm tham quan.
 </div>
 
@@ -306,25 +276,25 @@ body {
 <!-- Day 1 -->
 <div class="day-card d1">
   <div class="day-marker">
-    <div class="day-number" contenteditable="true">D1</div>
-    <div class="day-date" contenteditable="true">11/8 (Thứ Ba)</div>
+    <div class="day-number">D1</div>
+    <div class="day-date">11/8 (Thứ Ba)</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route" contenteditable="true">🛬 Hà Nội → Cao Hùng</div>
-      <div class="day-theme" contenteditable="true">AIDC・Tham quan khu Á Loan</div>
+      <div class="day-route">🛬 Hà Nội → Cao Hùng</div>
+      <div class="day-theme">AIDC・Tham quan khu Á Loan</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item" contenteditable="true"><span class="icon">🚌</span> Xe bus du lịch</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🏢</span> Phòng họp tầng 14F, Cao Nhuyễn</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Tiệc đón tiếp (món Hoa)</div>
+      <div class="meta-item"><span class="icon">🚌</span> Xe bus du lịch</div>
+      <div class="meta-item"><span class="icon">🏢</span> Phòng họp tầng 14F, Cao Nhuyễn</div>
+      <div class="meta-item"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Tiệc đón tiếp (món Hoa)</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text" contenteditable="true">Khởi hành bằng chuyến bay sáng sớm <strong>VN584</strong> của Vietnam Airlines, đến sân bay Tiểu Cảng Cao Hùng lúc <strong>10:50</strong> giờ Đài Loan. <em>(Thời gian bay khoảng 3,5 giờ)</em></div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text" contenteditable="true">Đón tại sân bay và đi thẳng đến <strong>phòng họp Cao Nhuyễn</strong>, thuyết trình về <strong>AIDC (Trung tâm Dữ liệu AI)</strong> và tham quan phòng máy, giúp đoàn hiểu cơ sở hạ tầng tính toán của Tập đoàn Foxconn.</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text" contenteditable="true">Nếu còn thời gian, tham quan <strong>Khu vực Vịnh mới Á Châu</strong> — lái xe qua Trung tâm Triển lãm Cao Hùng, Trung tâm Du lịch, Trung tâm Âm nhạc Đại chúng và Trung tâm Dịch vụ Liên hợp Khu Công nghệ Thông minh Á Loan.</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text" contenteditable="true">Chiều tối đưa đoàn đến khách sạn nhận phòng, nghỉ ngơi.</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text" contenteditable="true">Tối tổ chức tiệc đón tiếp tại <strong>nhà hàng món Hoa</strong>, dự kiến kết thúc khoảng 20:30 và về khách sạn.</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text">Khởi hành bằng chuyến bay sáng sớm <strong>VN584</strong> của Vietnam Airlines, đến sân bay Tiểu Cảng Cao Hùng lúc <strong>10:50</strong> giờ Đài Loan. <em>(Thời gian bay khoảng 3,5 giờ)</em></div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text">Đón tại sân bay và đi thẳng đến <strong>phòng họp Cao Nhuyễn</strong>, thuyết trình về <strong>AIDC (Trung tâm Dữ liệu AI)</strong> và tham quan phòng máy, giúp đoàn hiểu cơ sở hạ tầng tính toán của Tập đoàn Foxconn.</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text">Nếu còn thời gian, tham quan <strong>Khu vực Vịnh mới Á Châu</strong> — lái xe qua Trung tâm Triển lãm Cao Hùng, Trung tâm Du lịch, Trung tâm Âm nhạc Đại chúng và Trung tâm Dịch vụ Liên hợp Khu Công nghệ Thông minh Á Loan.</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text">Chiều tối đưa đoàn đến khách sạn nhận phòng, nghỉ ngơi.</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text">Tối tổ chức tiệc đón tiếp tại <strong>nhà hàng món Hoa</strong>, dự kiến kết thúc khoảng 20:30 và về khách sạn.</div></div>
     </div>
   </div>
 </div>
@@ -332,25 +302,25 @@ body {
 <!-- Day 2 -->
 <div class="day-card d2">
   <div class="day-marker">
-    <div class="day-number" contenteditable="true">D2</div>
-    <div class="day-date" contenteditable="true">12/8 (Thứ Tư)</div>
+    <div class="day-number">D2</div>
+    <div class="day-date">12/8 (Thứ Tư)</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route" contenteditable="true">🏙️ Cao Hùng cả ngày</div>
-      <div class="day-theme" contenteditable="true">Nhà máy xe buýt điện・CityGPT・Giao thông thông minh・Tham quan Đà Nhị</div>
+      <div class="day-route">🏙️ Cao Hùng cả ngày</div>
+      <div class="day-theme">Nhà máy xe buýt điện・CityGPT・Giao thông thông minh・Tham quan Đà Nhị</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item" contenteditable="true"><span class="icon">🚌</span> Xe bus du lịch / Tàu điện nhẹ</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🏢</span> Văn phòng Đà Nhị tầng 1</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Ẩm thực chợ đêm</div>
+      <div class="meta-item"><span class="icon">🚌</span> Xe bus du lịch / Tàu điện nhẹ</div>
+      <div class="meta-item"><span class="icon">🏢</span> Văn phòng Đà Nhị tầng 1</div>
+      <div class="meta-item"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Ẩm thực chợ đêm</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text" contenteditable="true">Sáng lái xe đến Khu Khoa học Kiều Đầu, tham quan <strong>Nhà máy xe buýt điện Foxtron</strong> — từ giới thiệu dây chuyền đến thực địa nhà máy, tìm hiểu sản xuất xe buýt điện và bố trí giao thông thông minh của Đài Loan.</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text" contenteditable="true">Quay về văn phòng Đà Nhị, giới thiệu <strong>nền tảng CityGPT</strong> của Foxconn — kiến trúc, năng lực và kịch bản ứng dụng của nền tảng AI quản trị đô thị.</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text" contenteditable="true">Chiều trao đổi chuyên sâu về chủ đề <strong>Giao thông Thông minh</strong>, bao gồm ứng dụng AI trong quản lý giao thông đô thị và chia sẻ kinh nghiệm triển khai.</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text" contenteditable="true">Chiều tối tham quan <strong>Khu nghệ thuật Đà Nhị</strong> với hướng dẫn viên, cảm nhận sức sống của Cao Hùng chuyển mình từ thành phố công nghiệp sang thành phố sáng tạo.</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text" contenteditable="true">Tối đưa đoàn đi bộ đến <strong>Chợ đêm Thụy Phong</strong> thưởng thức ẩm thực địa phương, đồng thời giới thiệu chính sách phiếu chợ đêm của thành phố. Dự kiến 20:00 về khách sạn, sau đó là thời gian tự do.</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text">Sáng lái xe đến Khu Khoa học Kiều Đầu, tham quan <strong>Nhà máy xe buýt điện Foxtron</strong> — từ giới thiệu dây chuyền đến thực địa nhà máy, tìm hiểu sản xuất xe buýt điện và bố trí giao thông thông minh của Đài Loan.</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text">Quay về văn phòng Đà Nhị, giới thiệu <strong>nền tảng CityGPT</strong> của Foxconn — kiến trúc, năng lực và kịch bản ứng dụng của nền tảng AI quản trị đô thị.</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text">Chiều trao đổi chuyên sâu về chủ đề <strong>Giao thông Thông minh</strong>, bao gồm ứng dụng AI trong quản lý giao thông đô thị và chia sẻ kinh nghiệm triển khai.</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text">Chiều tối tham quan <strong>Khu nghệ thuật Đà Nhị</strong> với hướng dẫn viên, cảm nhận sức sống của Cao Hùng chuyển mình từ thành phố công nghiệp sang thành phố sáng tạo.</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text">Tối đưa đoàn đi bộ đến <strong>Chợ đêm Thụy Phong</strong> thưởng thức ẩm thực địa phương, đồng thời giới thiệu chính sách phiếu chợ đêm của thành phố. Dự kiến 20:00 về khách sạn, sau đó là thời gian tự do.</div></div>
     </div>
   </div>
 </div>
@@ -358,26 +328,26 @@ body {
 <!-- Day 3 -->
 <div class="day-card d3">
   <div class="day-marker">
-    <div class="day-number" contenteditable="true">D3</div>
-    <div class="day-date" contenteditable="true">13/8 (Thứ Năm)</div>
+    <div class="day-number">D3</div>
+    <div class="day-date">13/8 (Thứ Năm)</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route" contenteditable="true">🚄 Cao Hùng → Đài Bắc</div>
-      <div class="day-theme" contenteditable="true">IOC Trung tâm Điều hành・Bái kiến lãnh đạo・Hướng dẫn thông minh・Showroom</div>
+      <div class="day-route">🚄 Cao Hùng → Đài Bắc</div>
+      <div class="day-theme">IOC Trung tâm Điều hành・Bái kiến lãnh đạo・Hướng dẫn thông minh・Showroom</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item" contenteditable="true"><span class="icon">🚌</span> Xe bus du lịch → 🚄 Tàu cao tốc → 🚐 Model T</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🏢</span> Sở GTVT TP Cao Hùng / Phòng họp Viện NC Nội Hồ</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🍽️</span> Trưa: Cơm hộp trên tàu ｜ Tối: Tiệc (món Hoa)</div>
+      <div class="meta-item"><span class="icon">🚌</span> Xe bus du lịch → 🚄 Tàu cao tốc → 🚐 Model T</div>
+      <div class="meta-item"><span class="icon">🏢</span> Sở GTVT TP Cao Hùng / Phòng họp Viện NC Nội Hồ</div>
+      <div class="meta-item"><span class="icon">🍽️</span> Trưa: Cơm hộp trên tàu ｜ Tối: Tiệc (món Hoa)</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text" contenteditable="true">Sáng đến tham quan <strong>Trung tâm Điều hành Giao thông Thông minh (IOC) Sở GTVT Cao Hùng</strong>, trực tiếp quan sát hệ thống giám sát và điều phối giao thông thời gian thực.</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text" contenteditable="true">Sau tham quan, đi tàu cao tốc ra Bắc <em>(ăn cơm hộp và nghỉ ngơi trên tàu)</em>, đến ga Nam Cảng rồi <strong>Model T</strong> đón đưa đến Viện Nghiên cứu Nội Hồ.</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text" contenteditable="true">Tại phòng họp Viện NC, sắp xếp <strong>gặp gỡ đại diện đội ngũ Foxconn</strong>, quan chức tỉnh Bắc Ninh và đại diện VNPT trao đổi ngắn, tặng quà lưu niệm và chụp ảnh.</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text" contenteditable="true">Đội ngũ Hồng Đồ chia sẻ thành quả ứng dụng <strong>Hướng dẫn Thông minh</strong> và các dự án thực tế.</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text" contenteditable="true">Tham quan <strong>Showroom</strong> Viện NC và khu trưng bày xe điện tầng 1, sau đó đưa đoàn đến khách sạn Đài Bắc nhận phòng.</div></div>
-      <div class="story-step"><div class="step-num">6</div><div class="step-text" contenteditable="true">Tối tổ chức tiệc tối tại nhà hàng Hoa (tùy sự tham dự của lãnh đạo), dự kiến 20:30 về khách sạn.</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text">Sáng đến tham quan <strong>Trung tâm Điều hành Giao thông Thông minh (IOC) Sở GTVT Cao Hùng</strong>, trực tiếp quan sát hệ thống giám sát và điều phối giao thông thời gian thực.</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text">Sau tham quan, đi tàu cao tốc ra Bắc <em>(ăn cơm hộp và nghỉ ngơi trên tàu)</em>, đến ga Nam Cảng rồi <strong>Model T</strong> đón đưa đến Viện Nghiên cứu Nội Hồ.</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text">Tại phòng họp Viện NC, sắp xếp <strong>gặp gỡ đại diện đội ngũ Foxconn</strong>, quan chức tỉnh Bắc Ninh và đại diện VNPT trao đổi ngắn, tặng quà lưu niệm và chụp ảnh.</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text">Đội ngũ Hồng Đồ chia sẻ thành quả ứng dụng <strong>Hướng dẫn Thông minh</strong> và các dự án thực tế.</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text">Tham quan <strong>Showroom</strong> Viện NC và khu trưng bày xe điện tầng 1, sau đó đưa đoàn đến khách sạn Đài Bắc nhận phòng.</div></div>
+      <div class="story-step"><div class="step-num">6</div><div class="step-text">Tối tổ chức tiệc tối tại nhà hàng Hoa (tùy sự tham dự của lãnh đạo), dự kiến 20:30 về khách sạn.</div></div>
     </div>
   </div>
 </div>
@@ -385,26 +355,26 @@ body {
 <!-- Day 4 -->
 <div class="day-card d4">
   <div class="day-marker">
-    <div class="day-number" contenteditable="true">D4</div>
-    <div class="day-date" contenteditable="true">14/8 (Thứ Sáu)</div>
+    <div class="day-number">D4</div>
+    <div class="day-date">14/8 (Thứ Sáu)</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route" contenteditable="true">🏙️ Đài Bắc cả ngày</div>
-      <div class="day-theme" contenteditable="true">An ninh thông minh・Môi trường・Y tế・IOC Đài Bắc・Thương mại thông minh</div>
+      <div class="day-route">🏙️ Đài Bắc cả ngày</div>
+      <div class="day-theme">An ninh thông minh・Môi trường・Y tế・IOC Đài Bắc・Thương mại thông minh</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item" contenteditable="true"><span class="icon">🚐</span> Model T / MRT</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🏢</span> Nhà máy Hổ Dược・Nhà máy Đỉnh Bộ・Sở TT&TT TP Đài Bắc</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Ẩm thực chợ đêm</div>
+      <div class="meta-item"><span class="icon">🚐</span> Model T / MRT</div>
+      <div class="meta-item"><span class="icon">🏢</span> Nhà máy Hổ Dược・Nhà máy Đỉnh Bộ・Sở TT&TT TP Đài Bắc</div>
+      <div class="meta-item"><span class="icon">🍽️</span> Trưa: Cơm hộp ｜ Tối: Ẩm thực chợ đêm</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text" contenteditable="true">Đi <strong>Model T</strong> đến nhà máy Hổ Dược, Thổ Thành, chia sẻ và trao đổi chuyên đề <strong>An ninh Thông minh</strong>.</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text" contenteditable="true">Chuyên đề <strong>Quản lý Tài nguyên Nước Thông minh</strong> — bao gồm nhận dạng hình ảnh nước thải bằng AI, thêm hóa chất thông minh AI, cảm biến quang học thông minh.</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text" contenteditable="true">Di chuyển đến nhà máy Đỉnh Bộ, đội ngũ <strong>Y tế Thông minh</strong> chia sẻ robot y tế (điều dưỡng/vận chuyển tự hành), <strong>CoDoctor</strong> và nền tảng quản lý bệnh mạn tính. <em>(Robot vận chuyển tự hành cũng có thể ứng dụng tại khu công nghiệp)</em></div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text" contenteditable="true">Chiều đến <strong>Sở TT&TT TP Đài Bắc</strong>, tham quan <strong>Trung tâm Dữ liệu Đại Đài Bắc</strong>, tìm hiểu cách chính quyền Đài Bắc dùng dữ liệu điều hành thành phố.</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text" contenteditable="true">Đến khu thương mại Tín Nghĩa, trải nghiệm <strong>Khu Thương mại Thông minh Đài Bắc</strong> — biển chỉ dẫn động công nghệ cao tại đại lộ Hương Đề, có chức năng chỉ đường động, đẩy thông tin khu thương mại và hiển thị thông minh.</div></div>
-      <div class="story-step"><div class="step-num">6</div><div class="step-text" contenteditable="true">Tối đưa đoàn đi MRT đến <strong>Chợ đêm Nhiêu Hà</strong> trải nghiệm văn hóa chợ đêm Đài Bắc, dự kiến 20:30 về khách sạn. Sau đó là thời gian tự do (ngày mai trả phòng, cần thu dọn hành lý).</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text">Đi <strong>Model T</strong> đến nhà máy Hổ Dược, Thổ Thành, chia sẻ và trao đổi chuyên đề <strong>An ninh Thông minh</strong>.</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text">Chuyên đề <strong>Quản lý Tài nguyên Nước Thông minh</strong> — bao gồm nhận dạng hình ảnh nước thải bằng AI, thêm hóa chất thông minh AI, cảm biến quang học thông minh.</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text">Di chuyển đến nhà máy Đỉnh Bộ, đội ngũ <strong>Y tế Thông minh</strong> chia sẻ robot y tế (điều dưỡng/vận chuyển tự hành), <strong>CoDoctor</strong> và nền tảng quản lý bệnh mạn tính. <em>(Robot vận chuyển tự hành cũng có thể ứng dụng tại khu công nghiệp)</em></div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text">Chiều đến <strong>Sở TT&TT TP Đài Bắc</strong>, tham quan <strong>Trung tâm Dữ liệu Đại Đài Bắc</strong>, tìm hiểu cách chính quyền Đài Bắc dùng dữ liệu điều hành thành phố.</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text">Đến khu thương mại Tín Nghĩa, trải nghiệm <strong>Khu Thương mại Thông minh Đài Bắc</strong> — biển chỉ dẫn động công nghệ cao tại đại lộ Hương Đề, có chức năng chỉ đường động, đẩy thông tin khu thương mại và hiển thị thông minh.</div></div>
+      <div class="story-step"><div class="step-num">6</div><div class="step-text">Tối đưa đoàn đi MRT đến <strong>Chợ đêm Nhiêu Hà</strong> trải nghiệm văn hóa chợ đêm Đài Bắc, dự kiến 20:30 về khách sạn. Sau đó là thời gian tự do (ngày mai trả phòng, cần thu dọn hành lý).</div></div>
     </div>
   </div>
 </div>
@@ -412,127 +382,32 @@ body {
 <!-- Day 5 -->
 <div class="day-card d5">
   <div class="day-marker">
-    <div class="day-number" contenteditable="true">D5</div>
-    <div class="day-date" contenteditable="true">15/8 (Thứ Bảy)</div>
+    <div class="day-number">D5</div>
+    <div class="day-date">15/8 (Thứ Bảy)</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route" contenteditable="true">🛫 Đài Bắc → Hà Nội</div>
-      <div class="day-theme" contenteditable="true">Tham quan Cố Cung・Hồi hương</div>
+      <div class="day-route">🛫 Đài Bắc → Hà Nội</div>
+      <div class="day-theme">Tham quan Cố Cung・Hồi hương</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item" contenteditable="true"><span class="icon">🚌</span> Xe bus du lịch</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🏢</span> Không có phòng họp</div>
-      <div class="meta-item" contenteditable="true"><span class="icon">🍽️</span> Trưa: Tự túc (sân bay)</div>
+      <div class="meta-item"><span class="icon">🚌</span> Xe bus du lịch</div>
+      <div class="meta-item"><span class="icon">🏢</span> Không có phòng họp</div>
+      <div class="meta-item"><span class="icon">🍽️</span> Trưa: Tự túc (sân bay)</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text" contenteditable="true">Sau khi trả phòng, đi xe đến tham quan <strong>Bảo tàng Cố Cung Đài Bắc</strong>, sắp xếp khoảng 2 giờ tham quan, trải nghiệm tinh hoa văn hóa Trung Hoa.</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text" contenteditable="true">Sau tham quan, lái xe đến <strong>Sân bay Quốc tế Đào Viên</strong>, làm thủ tục check-in và xuất cảnh.</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text" contenteditable="true">Bay chuyến China Airlines <strong>CI793</strong> (cất cánh 14:35), đến Hà Nội lúc 16:50 giờ Việt Nam, kết thúc tốt đẹp chuyến khảo sát.</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text">Sau khi trả phòng, đi xe đến tham quan <strong>Bảo tàng Cố Cung Đài Bắc</strong>, sắp xếp khoảng 2 giờ tham quan, trải nghiệm tinh hoa văn hóa Trung Hoa.</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text">Sau tham quan, lái xe đến <strong>Sân bay Quốc tế Đào Viên</strong>, làm thủ tục check-in và xuất cảnh.</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text">Bay chuyến China Airlines <strong>CI793</strong> (cất cánh 14:35), đến Hà Nội lúc 16:50 giờ Việt Nam, kết thúc tốt đẹp chuyến khảo sát.</div></div>
     </div>
   </div>
 </div>
 
 </div>
 
-<div class="footer" contenteditable="true">
+<div class="footer">
   Foxconn Smart City BG ｜ Dự án Thành phố Thông minh Bắc Ninh 2026 ｜ Storyline Lịch trình
 </div>
-
-
-<script>
-const STORAGE_KEY = 'storyline_edits_vi_v1';
-
-// Load saved edits
-function loadEdits() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      if (data.html) {
-        // Restore the saved body content
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(data.html, 'text/html');
-        // Get all contenteditable elements and restore
-        const savedEls = doc.querySelectorAll('[contenteditable]');
-        const currentEls = document.querySelectorAll('[contenteditable]');
-        savedEls.forEach((el, i) => {
-          if (currentEls[i]) currentEls[i].innerHTML = el.innerHTML;
-        });
-      }
-    } catch(e) { console.log('Load error', e); }
-  }
-}
-
-function saveToLocal() {
-  // Collect all contenteditable elements
-  const els = document.querySelectorAll('[contenteditable]');
-  const tempDiv = document.createElement('div');
-  els.forEach(el => {
-    const clone = el.cloneNode(true);
-    clone.setAttribute('contenteditable', 'true');
-    tempDiv.appendChild(clone);
-  });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ html: tempDiv.innerHTML, saved: new Date().toISOString() }));
-  
-  // Show indicator
-  const msg = document.getElementById('saveMsg');
-  msg.classList.add('show');
-  setTimeout(() => msg.classList.remove('show'), 1500);
-}
-
-function exportClean() {
-  // Clone the document, remove toolbar and indicators, remove contenteditable
-  const clone = document.documentElement.cloneNode(true);
-  const toolbar = clone.querySelector('.edit-toolbar');
-  if (toolbar) toolbar.remove();
-  const indicator = clone.querySelector('.save-indicator');
-  if (indicator) indicator.remove();
-  const script = clone.querySelector('script');
-  if (script) script.remove();
-  
-  // Remove contenteditable attributes
-  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
-  
-  // Remove editable-related CSS (keep everything else)
-  const style = clone.querySelector('style');
-  if (style) {
-    style.textContent = style.textContent
-      .replace(/\/\* Editable \*\/[\s\S]*?\.save-indicator\.show \{ opacity: 1; \}/, '');
-  }
-  
-  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
-  const blob = new Blob([html], {type: 'text/html'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'Đoàn Bắc Ninh_Storyline_xuất.html';
-  a.click();
-}
-
-function resetAll() {
-  if (!confirm('Bạn có chắc muốn đặt lại nội dung gốc? Mọi chỉnh sửa sẽ bị mất.')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
-}
-
-// Auto-save on blur
-document.addEventListener('focusout', function(e) {
-  if (e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
-    saveToLocal();
-  }
-});
-
-// Ctrl+S to save
-document.addEventListener('keydown', function(e) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-    e.preventDefault();
-    saveToLocal();
-  }
-});
-
-// Load on page ready
-loadEdits();
-</script>
 
 </body>
 </html>
