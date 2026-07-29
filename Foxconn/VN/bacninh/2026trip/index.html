@@ -222,6 +222,7 @@ body {
   border-top: 1px solid rgba(148,163,184,0.1);
 }
 
+
 .lang-switcher {
   position: fixed; top: 12px; left: 12px; z-index: 999;
   display: flex; gap: 4px;
@@ -309,7 +310,7 @@ body {
 .attachment-item:hover .attachment-delete { opacity: 1; }
 .attachment-delete:hover { color: #ef4444; }
 .attachment-preview {
-  display: block;
+  display: none;
   padding: 16px;
   background: rgba(15,23,42,0.4);
   border-top: 1px solid rgba(148,163,184,0.08);
@@ -332,6 +333,7 @@ body {
   border-radius: 8px;
 }
 .upload-area {
+  display: none;
   border: 2px dashed rgba(148,163,184,0.3);
   border-radius: 12px;
   padding: 40px 20px;
@@ -347,6 +349,28 @@ body {
 .upload-text { font-size: 15px; color: #94a3b8; margin-bottom: 4px; }
 .upload-hint { font-size: 12px; color: #64748b; }
 
+/* Editable */
+[contenteditable] { outline: none; border-radius: 4px; transition: box-shadow 0.15s; }
+[contenteditable]:hover { box-shadow: 0 0 0 1px rgba(56,189,248,0.3); }
+[contenteditable]:focus { box-shadow: 0 0 0 2px rgba(56,189,248,0.5); background: rgba(56,189,248,0.05); }
+.edit-toolbar {
+  display: none;
+  position: fixed; top: 12px; right: 12px; z-index: 999;
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.edit-toolbar button {
+  padding: 8px 14px; border-radius: 6px; border: 1px solid rgba(148,163,184,0.3);
+  background: rgba(15,23,42,0.95); color: #94a3b8; font-size: 13px; cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.edit-toolbar button:hover { background: rgba(56,189,248,0.15); color: #38bdf8; border-color: #38bdf8; }
+.save-indicator {
+  position: fixed; bottom: 16px; right: 16px; padding: 8px 16px;
+  background: rgba(16,185,129,0.9); color: #fff; border-radius: 8px;
+  font-size: 13px; opacity: 0; transition: opacity 0.3s; z-index: 999;
+}
+.save-indicator.show { opacity: 1; }
+
 @media (max-width: 768px) {
   .day-card { grid-template-columns: 1fr; }
   .day-marker { display: flex; align-items: center; gap: 12px; }
@@ -357,23 +381,31 @@ body {
 </head>
 <body>
 
+
 <div class="lang-switcher">
   <a href="index.html" class="active">中文</a>
   <a href="vi.html">Tiếng Việt</a>
 </div>
 
+<div class="edit-toolbar">
+  <button onclick="saveToLocal()">💾 儲存修改</button>
+  <button onclick="exportClean()">📥 匯出 HTML</button>
+  <button onclick="resetAll()">🔄 重設原始</button>
+</div>
+<div class="save-indicator" id="saveMsg">✅ 已儲存</div>
+
 <div class="hero">
-  <h1>北寧省代表團赴台參訪</h1>
-  <div class="subtitle">越南北寧省智慧城市考察之旅 — 行程故事線</div>
+  <h1 data-editable="true">北寧省代表團赴台參訪</h1>
+  <div class="subtitle" data-editable="true">越南北寧省智慧城市考察之旅 — 行程故事線</div>
   <div class="info-badges">
-    <div class="badge"><span class="icon">📅</span><span> 2026/8/11（二）~ 8/15（六）</span></div>
-    <div class="badge"><span class="icon">🌙</span><span> 5天4夜</span></div>
-    <div class="badge"><span class="icon">✈️</span><span> 高雄入・桃園出</span></div>
-    <div class="badge"><span class="icon">👥</span><span> 14 位（官方8＋越南總部2＋VNPT 4）</span></div>
+    <div class="badge"><span class="icon">📅</span><span data-editable="true"> 2026/8/11（二）~ 8/15（六）</span></div>
+    <div class="badge"><span class="icon">🌙</span><span data-editable="true"> 5天4夜</span></div>
+    <div class="badge"><span class="icon">✈️</span><span data-editable="true"> 高雄入・桃園出</span></div>
+    <div class="badge"><span class="icon">👥</span><span data-editable="true"> 14 位（官方8＋越南總部2＋VNPT 4）</span></div>
   </div>
 </div>
 
-<div class="context-box">
+<div class="context-box" data-editable="true">
   <strong>⏱ 時間限制：</strong>5天4夜的行程，扣除首日中午才抵達、末日中午即離境，實際可安排公務行程約 <strong>3.5 天</strong>，再扣掉高雄至台北的高鐵移動時間，有效工作時間約 <strong>3 天</strong>。行程設計以「高密度但不趕場」為原則，確保每個參訪點都有充分交流時間。
 </div>
 
@@ -382,25 +414,25 @@ body {
 <!-- Day 1 -->
 <div class="day-card d1">
   <div class="day-marker">
-    <div class="day-number">D1</div>
-    <div class="day-date">8/11（二）</div>
+    <div class="day-number" data-editable="true">D1</div>
+    <div class="day-date" data-editable="true">8/11（二）</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route">🛬 河內 → 高雄</div>
-      <div class="day-theme">AIDC・亞灣區導覽</div>
+      <div class="day-route" data-editable="true">🛬 河內 → 高雄</div>
+      <div class="day-theme" data-editable="true">AIDC・亞灣區導覽</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item"><span class="icon">🚌</span> 遊覽車</div>
-      <div class="meta-item"><span class="icon">🏢</span> 高軟 14F 戰情室</div>
-      <div class="meta-item"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：中式桌菜接風</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🚌</span> 遊覽車</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🏢</span> 高軟 14F 戰情室</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：中式桌菜接風</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text">搭乘越南航空 <strong>VN584</strong> 清晨班機出發，台灣時間 <strong>10:50</strong> 抵達高雄小港機場。<em>（飛行時間約 3.5 小時）</em></div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text">接機後直接前往<strong>高軟會議室</strong>，安排 <strong>AIDC（AI 數據中心）</strong>簡報與機房參訪，讓代表團了解鴻海集團的基礎算力設施。</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text">若時間充裕，安排<strong>亞洲新灣區</strong>導覽——開車巡覽高雄展覽館、旅運中心、流行音樂中心等地標，並詢問亞灣智慧科技創新園區聯合服務中心是否可參訪。</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text">傍晚帶代表團前往飯店 check-in，稍作休息整理。</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text">晚間於<strong>中式桌菜餐廳</strong>舉辦接風晚宴，預計 20:30 左右結束返回飯店。</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text" data-editable="true">搭乘越南航空 <strong>VN584</strong> 清晨班機出發，台灣時間 <strong>10:50</strong> 抵達高雄小港機場。<em>（飛行時間約 3.5 小時）</em></div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text" data-editable="true">接機後直接前往<strong>高軟會議室</strong>，安排 <strong>AIDC（AI 數據中心）</strong>簡報與機房參訪，讓代表團了解鴻海集團的基礎算力設施。</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text" data-editable="true">若時間充裕，安排<strong>亞洲新灣區</strong>導覽——開車巡覽高雄展覽館、旅運中心、流行音樂中心等地標，並詢問亞灣智慧科技創新園區聯合服務中心是否可參訪。</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text" data-editable="true">傍晚帶代表團前往飯店 check-in，稍作休息整理。</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text" data-editable="true">晚間於<strong>中式桌菜餐廳</strong>舉辦接風晚宴，預計 20:30 左右結束返回飯店。</div></div>
     </div>
   </div>
 </div>
@@ -408,25 +440,25 @@ body {
 <!-- Day 2 -->
 <div class="day-card d2">
   <div class="day-marker">
-    <div class="day-number">D2</div>
-    <div class="day-date">8/12（三）</div>
+    <div class="day-number" data-editable="true">D2</div>
+    <div class="day-date" data-editable="true">8/12（三）</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route">🏙️ 高雄全日</div>
-      <div class="day-theme">電巴廠・CityGPT・智慧交通・駁二導覽</div>
+      <div class="day-route" data-editable="true">🏙️ 高雄全日</div>
+      <div class="day-theme" data-editable="true">電巴廠・CityGPT・智慧交通・駁二導覽</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item"><span class="icon">🚌</span> 遊覽車 / 輕軌</div>
-      <div class="meta-item"><span class="icon">🏢</span> 駁二辦公室 1F</div>
-      <div class="meta-item"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：夜市小吃</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🚌</span> 遊覽車 / 輕軌</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🏢</span> 駁二辦公室 1F</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：夜市小吃</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text">上午驅車前往橋頭科學園區，參訪<strong>鴻華先進電巴廠</strong>——從產線簡介到工廠實地走訪，了解台灣電動巴士的製造與智慧運輸佈局。</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text">回到駁二辦公室，介紹鴻海 <strong>CityGPT 平台</strong>——城市級 AI 治理平台的架構、能力與應用場景。</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text">下午以<strong>智慧交通</strong>為主題深度交流，涵蓋城市交通管理的 AI 應用與落地經驗分享。</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text">傍晚安排<strong>駁二藝術特區</strong>專人導覽，感受高雄從工業港都蛻變為文創城市的活力。</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text">晚間帶代表團步行至<strong>瑞豐夜市</strong>品嘗在地小吃，順便介紹高雄市府推廣的夜市券政策。預計 20:00 送回飯店，後續為自由行程。</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text" data-editable="true">上午驅車前往橋頭科學園區，參訪<strong>鴻華先進電巴廠</strong>——從產線簡介到工廠實地走訪，了解台灣電動巴士的製造與智慧運輸佈局。</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text" data-editable="true">回到駁二辦公室，介紹鴻海 <strong>CityGPT 平台</strong>——城市級 AI 治理平台的架構、能力與應用場景。</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text" data-editable="true">下午以<strong>智慧交通</strong>為主題深度交流，涵蓋城市交通管理的 AI 應用與落地經驗分享。</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text" data-editable="true">傍晚安排<strong>駁二藝術特區</strong>專人導覽，感受高雄從工業港都蛻變為文創城市的活力。</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text" data-editable="true">晚間帶代表團步行至<strong>瑞豐夜市</strong>品嘗在地小吃，順便介紹高雄市府推廣的夜市券政策。預計 20:00 送回飯店，後續為自由行程。</div></div>
     </div>
   </div>
 </div>
@@ -434,26 +466,26 @@ body {
 <!-- Day 3 -->
 <div class="day-card d3">
   <div class="day-marker">
-    <div class="day-number">D3</div>
-    <div class="day-date">8/13（四）</div>
+    <div class="day-number" data-editable="true">D3</div>
+    <div class="day-date" data-editable="true">8/13（四）</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route">🚄 高雄 → 台北</div>
-      <div class="day-theme">IOC 智運中心・拜會長官・智慧導覽・Showroom</div>
+      <div class="day-route" data-editable="true">🚄 高雄 → 台北</div>
+      <div class="day-theme" data-editable="true">IOC 智運中心・拜會長官・智慧導覽・Showroom</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item"><span class="icon">🚌</span> 遊覽車 → 🚄 高鐵 → 🚐 Model T</div>
-      <div class="meta-item"><span class="icon">🏢</span> 高市府交通局 / 內湖研究院會議室</div>
-      <div class="meta-item"><span class="icon">🍽️</span> 午餐：高鐵便當 ｜ 晚餐：中式桌菜</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🚌</span> 遊覽車 → 🚄 高鐵 → 🚐 Model T</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🏢</span> 高市府交通局 / 內湖研究院會議室</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🍽️</span> 午餐：高鐵便當 ｜ 晚餐：中式桌菜</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text">上午前往<strong>高市府交通局智運中心（IOC）</strong>參訪，實地觀看高雄市智慧交通的即時監控與調度運作。</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text">參訪結束後搭乘高鐵北上<em>（車上發便當用餐、休息）</em>，抵達南港站後由 <strong>Model T</strong> 接駁前往內湖研究院。</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text">於研究院會議室安排<strong>鴻海團隊代表會面</strong>，北寧省官員與 VNPT 代表簡短交流、互贈伴手禮、合影留念。</div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text">由鴻圖團隊分享<strong>智慧導覽</strong>應用成果與相關實績案例。</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text">參訪研究院 <strong>Showroom</strong> 與 1F 電動車展間，結束後帶代表團前往台北飯店 check-in。</div></div>
-      <div class="story-step"><div class="step-num">6</div><div class="step-text">晚間於中式餐廳舉辦晚宴（視長官出席意願），預計 20:30 送回飯店。</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text" data-editable="true">上午前往<strong>高市府交通局智運中心（IOC）</strong>參訪，實地觀看高雄市智慧交通的即時監控與調度運作。</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text" data-editable="true">參訪結束後搭乘高鐵北上<em>（車上發便當用餐、休息）</em>，抵達南港站後由 <strong>Model T</strong> 接駁前往內湖研究院。</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text" data-editable="true">於研究院會議室安排<strong>鴻海團隊代表會面</strong>，北寧省官員與 VNPT 代表簡短交流、互贈伴手禮、合影留念。</div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text" data-editable="true">由鴻圖團隊分享<strong>智慧導覽</strong>應用成果與相關實績案例。</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text" data-editable="true">參訪研究院 <strong>Showroom</strong> 與 1F 電動車展間，結束後帶代表團前往台北飯店 check-in。</div></div>
+      <div class="story-step"><div class="step-num">6</div><div class="step-text" data-editable="true">晚間於中式餐廳舉辦晚宴（視長官出席意願），預計 20:30 送回飯店。</div></div>
     </div>
   </div>
 </div>
@@ -461,26 +493,26 @@ body {
 <!-- Day 4 -->
 <div class="day-card d4">
   <div class="day-marker">
-    <div class="day-number">D4</div>
-    <div class="day-date">8/14（五）</div>
+    <div class="day-number" data-editable="true">D4</div>
+    <div class="day-date" data-editable="true">8/14（五）</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route">🏙️ 台北全日</div>
-      <div class="day-theme">智慧安防・智慧環保・智慧醫療・北市府 IOC・智慧商圈</div>
+      <div class="day-route" data-editable="true">🏙️ 台北全日</div>
+      <div class="day-theme" data-editable="true">智慧安防・智慧環保・智慧醫療・北市府 IOC・智慧商圈</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item"><span class="icon">🚐</span> Model T / 捷運</div>
-      <div class="meta-item"><span class="icon">🏢</span> 虎躍廠・頂埔廠・北市府資訊局</div>
-      <div class="meta-item"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：夜市小吃</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🚐</span> Model T / 捷運</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🏢</span> 虎躍廠・頂埔廠・北市府資訊局</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🍽️</span> 午餐：工作便餐 ｜ 晚餐：夜市小吃</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text">搭乘 <strong>Model T</strong> 前往土城虎躍廠，進行<strong>智慧安防</strong>專題分享與交流。</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text"><strong>智慧水資源管理</strong>專題——包含 AI 廢水影像辨識、AI 智能加藥、光學智能感測等環保應用。</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text">轉往頂埔廠，<strong>智慧醫療</strong>團隊分享醫療場域機器人（護理/自主運輸）、<strong>CoDoctor</strong> 及慢性疾病管理平台的技術與 Demo。<em>（自主運輸機器人也可應用於園區場域）</em></div></div>
-      <div class="story-step"><div class="step-num">4</div><div class="step-text">下午前往<strong>北市府資訊局</strong>，參訪<strong>大台北數據中心</strong>，了解台北市政府如何以數據驅動城市治理。</div></div>
-      <div class="story-step"><div class="step-num">5</div><div class="step-text">前往信義商圈，體驗<strong>臺北市智慧商圈</strong>——香堤大道的高科技動態指引路牌，具備動態指路、商圈訊息推播與智慧顯示功能。</div></div>
-      <div class="story-step"><div class="step-num">6</div><div class="step-text">晚間帶代表團搭捷運至<strong>饒河夜市</strong>體驗台北夜市文化，預計 20:30 送回飯店。後續為自由行程（隔日需退房收拾行李）。</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text" data-editable="true">搭乘 <strong>Model T</strong> 前往土城虎躍廠，進行<strong>智慧安防</strong>專題分享與交流。</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text" data-editable="true"><strong>智慧水資源管理</strong>專題——包含 AI 廢水影像辨識、AI 智能加藥、光學智能感測等環保應用。</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text" data-editable="true">轉往頂埔廠，<strong>智慧醫療</strong>團隊分享醫療場域機器人（護理/自主運輸）、<strong>CoDoctor</strong> 及慢性疾病管理平台的技術與 Demo。<em>（自主運輸機器人也可應用於園區場域）</em></div></div>
+      <div class="story-step"><div class="step-num">4</div><div class="step-text" data-editable="true">下午前往<strong>北市府資訊局</strong>，參訪<strong>大台北數據中心</strong>，了解台北市政府如何以數據驅動城市治理。</div></div>
+      <div class="story-step"><div class="step-num">5</div><div class="step-text" data-editable="true">前往信義商圈，體驗<strong>臺北市智慧商圈</strong>——香堤大道的高科技動態指引路牌，具備動態指路、商圈訊息推播與智慧顯示功能。</div></div>
+      <div class="story-step"><div class="step-num">6</div><div class="step-text" data-editable="true">晚間帶代表團搭捷運至<strong>饒河夜市</strong>體驗台北夜市文化，預計 20:30 送回飯店。後續為自由行程（隔日需退房收拾行李）。</div></div>
     </div>
   </div>
 </div>
@@ -488,28 +520,29 @@ body {
 <!-- Day 5 -->
 <div class="day-card d5">
   <div class="day-marker">
-    <div class="day-number">D5</div>
-    <div class="day-date">8/15（六）</div>
+    <div class="day-number" data-editable="true">D5</div>
+    <div class="day-date" data-editable="true">8/15（六）</div>
   </div>
   <div class="day-content">
     <div class="day-header-bar">
-      <div class="day-route">🛫 台北 → 河內</div>
-      <div class="day-theme">故宮參訪・賦歸</div>
+      <div class="day-route" data-editable="true">🛫 台北 → 河內</div>
+      <div class="day-theme" data-editable="true">故宮參訪・賦歸</div>
     </div>
     <div class="day-meta">
-      <div class="meta-item"><span class="icon">🚌</span> 遊覽車</div>
-      <div class="meta-item"><span class="icon">🏢</span> 無會議室</div>
-      <div class="meta-item"><span class="icon">🍽️</span> 午餐：自理（機場）</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🚌</span> 遊覽車</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🏢</span> 無會議室</div>
+      <div class="meta-item" data-editable="true"><span class="icon">🍽️</span> 午餐：自理（機場）</div>
     </div>
     <div class="day-story">
-      <div class="story-step"><div class="step-num">1</div><div class="step-text">飯店退房後，搭車前往<strong>台北故宮博物院</strong>參觀，安排約 2 小時導覽，體驗中華文化瑰寶。</div></div>
-      <div class="story-step"><div class="step-num">2</div><div class="step-text">參觀結束後驅車前往<strong>桃園國際機場</strong>，辦理報到與出關手續。</div></div>
-      <div class="story-step"><div class="step-num">3</div><div class="step-text">搭乘中華航空 <strong>CI793</strong>（14:35 起飛），越南時間 16:50 抵達河內，圓滿結束此次考察之旅。</div></div>
+      <div class="story-step"><div class="step-num">1</div><div class="step-text" data-editable="true">飯店退房後，搭車前往<strong>台北故宮博物院</strong>參觀，安排約 2 小時導覽，體驗中華文化瑰寶。</div></div>
+      <div class="story-step"><div class="step-num">2</div><div class="step-text" data-editable="true">參觀結束後驅車前往<strong>桃園國際機場</strong>，辦理報到與出關手續。</div></div>
+      <div class="story-step"><div class="step-num">3</div><div class="step-text" data-editable="true">搭乘中華航空 <strong>CI793</strong>（14:35 起飛），越南時間 16:50 抵達河內，圓滿結束此次考察之旅。</div></div>
     </div>
   </div>
 </div>
 
 </div>
+
 
 <!-- Attachments Section -->
 <div class="attachments-section">
@@ -518,35 +551,321 @@ body {
     <div class="attachment-item" data-filename="VN-SKD.png">
       <div class="attachment-header" onclick="toggleAttachment(this)">
         <div class="attachment-header-left">
-          <span class="attachment-toggle open">▼</span>
-          <span class="attachment-name" onclick="event.stopPropagation()">點選展開行程規劃表</span>
+          <span class="attachment-toggle">▶</span>
+          <span class="attachment-name" data-editable="true" onclick="event.stopPropagation()">點選展開行程規劃表</span>
         </div>
+        <button class="attachment-delete" onclick="event.stopPropagation(); deleteAttachment(this)">×</button>
       </div>
-      <div class="attachment-preview open">
+      <div class="attachment-preview">
         <img src="VN-SKD.png" alt="行程規劃表" onclick="window.open(this.src)">
       </div>
     </div>
   </div>
-  
+  <div class="upload-area" id="upload-area">
+    <div class="upload-icon">📁</div>
+    <div class="upload-text">拖曳檔案到此處，或點擊上傳</div>
+    <div class="upload-hint">支援 JPG / PNG / PDF</div>
+    <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.pdf" multiple style="display:none">
+  </div>
 </div>
 
+
 <script>
+const STORAGE_KEY = 'storyline_edits_v1';
+
+// Load saved edits
+function loadEdits() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data.html) {
+        // Restore the saved body content
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data.html, 'text/html');
+        // Get all contenteditable elements and restore
+        const savedEls = doc.querySelectorAll('[contenteditable]');
+        const currentEls = document.querySelectorAll('[contenteditable]');
+        savedEls.forEach((el, i) => {
+          if (currentEls[i]) currentEls[i].innerHTML = el.innerHTML;
+        });
+      }
+    } catch(e) { console.log('Load error', e); }
+  }
+}
+
+function saveToLocal() {
+  // Collect all contenteditable elements
+  const els = document.querySelectorAll('[contenteditable]');
+  const tempDiv = document.createElement('div');
+  els.forEach(el => {
+    const clone = el.cloneNode(true);
+    clone.setAttribute('contenteditable', 'true');
+    tempDiv.appendChild(clone);
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ html: tempDiv.innerHTML, saved: new Date().toISOString() }));
+  
+  // Also save attachments embedded data
+  saveAttachments();
+  
+  
+  // Show indicator
+  const msg = document.getElementById('saveMsg');
+  msg.textContent = '✅ 已儲存';
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 1500);
+}
+
+
+
+function exportClean() {
+  // Clone the document, remove toolbar and indicators, remove contenteditable
+  const clone = document.documentElement.cloneNode(true);
+  const toolbar = clone.querySelector('.edit-toolbar');
+  if (toolbar) toolbar.remove();
+  const indicator = clone.querySelector('.save-indicator');
+  if (indicator) indicator.remove();
+  const script = clone.querySelector('script');
+  if (script) script.remove();
+  
+  // Remove contenteditable attributes
+  clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  
+  // Remove editable-related CSS (keep everything else)
+  const style = clone.querySelector('style');
+  if (style) {
+    style.textContent = style.textContent
+      .replace(/\/\* Editable \*\/[\s\S]*?\.save-indicator\.show \{ opacity: 1; \}/, '');
+  }
+  
+  const html = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([html], {type: 'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '北寧代表團_Storyline_匯出.html';
+  a.click();
+}
+
+function resetAll() {
+  if (!confirm('確定重設為原始內容？你的所有修改會消失。')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// Auto-save on blur
+document.addEventListener('focusout', function(e) {
+  if (e.target.hasAttribute && e.target.hasAttribute('contenteditable')) {
+    saveToLocal();
+  }
+});
+
+// Ctrl+S to save
+document.addEventListener('keydown', function(e) {
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    saveToLocal();
+  }
+});
+
+// Load on page ready
+loadEdits();
+
+
+
+// === Attachments Upload ===
+const uploadArea = document.getElementById('upload-area');
+const fileInput = document.getElementById('file-input');
+const grid = document.getElementById('attachments-grid');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['jpg','jpeg','png','pdf'].includes(ext)) {
+      alert('不支援此格式，請上傳 JPG / PNG / PDF');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      addAttachment(file.name, dataUrl, ext);
+      saveAttachments();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function addAttachment(filename, dataUrl, ext) {
+  const item = document.createElement('div');
+  item.className = 'attachment-item';
+  item.dataset.filename = filename;
+  
+  let preview = '';
+  if (ext === 'pdf') {
+    preview = `<iframe src="${dataUrl}"></iframe>`;
+  } else {
+    preview = `<img src="${dataUrl}" alt="${filename}" onclick="window.open(this.src)">`;
+  }
+  
+  item.innerHTML = `
+    <div class="attachment-header" onclick="toggleAttachment(this)">
+      <div class="attachment-header-left">
+        <span class="attachment-toggle">▶</span>
+        <span class="attachment-name" data-editable="true" onclick="event.stopPropagation()">${filename}</span>
+      </div>
+      <button class="attachment-delete" onclick="event.stopPropagation(); deleteAttachment(this)">×</button>
+    </div>
+    <div class="attachment-preview">${preview}</div>
+  `;
+  grid.appendChild(item);
+}
+
 function toggleAttachment(header) {
   const preview = header.nextElementSibling;
   const toggle = header.querySelector('.attachment-toggle');
-  const isOpen = preview.classList.contains('open');
-  if (isOpen) {
-    preview.classList.remove('open');
-    preview.style.display = 'none';
-    toggle.classList.remove('open');
-    toggle.textContent = '▶';
-  } else {
-    preview.classList.add('open');
-    preview.style.display = 'block';
-    toggle.classList.add('open');
-    toggle.textContent = '▼';
-  }
+  preview.classList.toggle('open');
+  toggle.classList.toggle('open');
 }
+
+function deleteAttachment(btn) {
+  if (!confirm('確定刪除此附件？')) return;
+  btn.closest('.attachment-item').remove();
+  saveAttachments();
+}
+
+function saveAttachments() {
+  // Save attachments data to localStorage AND embed in a hidden div for publish script
+  const items = grid.querySelectorAll('.attachment-item');
+  const data = [];
+  items.forEach(item => {
+    const img = item.querySelector('img');
+    const iframe = item.querySelector('iframe');
+    const name = item.querySelector('.attachment-name').textContent;
+    const src = img ? img.src : (iframe ? iframe.src : '');
+    if (src.startsWith('data:')) {
+      data.push({ name, src, filename: item.dataset.filename });
+    }
+  });
+  localStorage.setItem('storyline_attachments_v1', JSON.stringify(data));
+  
+  // Also update the embedded data element (for publish script to read)
+  let dataEl = document.getElementById('embedded-attachments-data');
+  if (!dataEl) {
+    dataEl = document.createElement('script');
+    dataEl.id = 'embedded-attachments-data';
+    dataEl.type = 'application/json';
+    document.body.appendChild(dataEl);
+  }
+  dataEl.textContent = JSON.stringify(data);
+}
+
+function loadAttachments() {
+  // First try localStorage
+  let data = null;
+  const saved = localStorage.getItem('storyline_attachments_v1');
+  if (saved) {
+    try { data = JSON.parse(saved); } catch(e) {}
+  }
+  // If no localStorage, try embedded data
+  if (!data) {
+    const el = document.getElementById('embedded-attachments-data');
+    if (el && el.textContent) {
+      try { data = JSON.parse(el.textContent); } catch(e) {}
+    }
+  }
+  if (!data) return;
+  data.forEach(item => {
+    const ext = item.filename.split('.').pop().toLowerCase();
+    addAttachment(item.name || item.filename, item.src, ext);
+  });
+}
+
+// Load saved attachments
+loadAttachments();
+
+// Image click to fullscreen
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'IMG' && e.target.closest('.attachment-preview')) {
+    window.open(e.target.src, '_blank');
+  }
+});
+// === Password-gated editing ===
+const EDIT_PASSWORD = 'foxconn';
+const SESSION_KEY = 'storyline_edit_session';
+const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours
+
+function isAuthenticated() {
+  const session = localStorage.getItem(SESSION_KEY);
+  if (!session) return false;
+  const expiry = parseInt(session);
+  if (Date.now() > expiry) {
+    localStorage.removeItem(SESSION_KEY);
+    return false;
+  }
+  return true;
+}
+
+function authenticate() {
+  const pw = prompt('請輸入編輯密碼：');
+  if (pw === EDIT_PASSWORD) {
+    localStorage.setItem(SESSION_KEY, (Date.now() + SESSION_DURATION).toString());
+    enableEditing();
+    return true;
+  } else if (pw !== null) {
+    alert('密碼錯誤');
+  }
+  return false;
+}
+
+function enableEditing() {
+  document.querySelectorAll('[data-editable]').forEach(el => {
+    el.setAttribute('contenteditable', 'true');
+  });
+  // Show toolbar
+  const toolbar = document.querySelector('.edit-toolbar');
+  if (toolbar) toolbar.style.display = 'flex';
+  // Show upload area
+  const upload = document.querySelector('.upload-area');
+  if (upload) upload.style.display = 'block';
+}
+
+function disableEditing() {
+  document.querySelectorAll('[data-editable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+  });
+  const toolbar = document.querySelector('.edit-toolbar');
+  if (toolbar) toolbar.style.display = 'none';
+  const upload = document.querySelector('.upload-area');
+  if (upload) upload.style.display = 'none';
+}
+
+// On page load: check session
+if (isAuthenticated()) {
+  enableEditing();
+} else {
+  disableEditing();
+  // Listen for click on any editable element
+  document.addEventListener('click', function gateHandler(e) {
+    const editable = e.target.closest('[data-editable]');
+    if (editable && !isAuthenticated()) {
+      e.preventDefault();
+      if (authenticate()) {
+        document.removeEventListener('click', gateHandler);
+      }
+    }
+  });
+}
+
 </script>
+
 </body>
 </html>
