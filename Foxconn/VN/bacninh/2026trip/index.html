@@ -580,12 +580,10 @@ function loadEdits() {
     try {
       const data = JSON.parse(saved);
       if (data.html) {
-        // Restore the saved body content
         const parser = new DOMParser();
         const doc = parser.parseFromString(data.html, 'text/html');
-        // Get all contenteditable elements and restore
-        const savedEls = doc.querySelectorAll('[contenteditable]');
-        const currentEls = document.querySelectorAll('[contenteditable]');
+        const savedEls = doc.querySelectorAll('[data-editable]');
+        const currentEls = document.querySelectorAll('[data-editable]');
         savedEls.forEach((el, i) => {
           if (currentEls[i]) currentEls[i].innerHTML = el.innerHTML;
         });
@@ -595,12 +593,11 @@ function loadEdits() {
 }
 
 function saveToLocal() {
-  // Collect all contenteditable elements
-  const els = document.querySelectorAll('[contenteditable]');
+  const els = document.querySelectorAll('[data-editable]');
   const tempDiv = document.createElement('div');
   els.forEach(el => {
     const clone = el.cloneNode(true);
-    clone.setAttribute('contenteditable', 'true');
+    clone.setAttribute('data-editable', 'true');
     tempDiv.appendChild(clone);
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify({ html: tempDiv.innerHTML, saved: new Date().toISOString() }));
