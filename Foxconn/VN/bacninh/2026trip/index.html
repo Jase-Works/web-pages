@@ -370,6 +370,7 @@ body {
   font-size: 13px; opacity: 0; transition: opacity 0.3s; z-index: 999;
 }
 .save-indicator.show { opacity: 1; }
+.save-indicator { transition: opacity 0.3s; }
 
 @media (max-width: 768px) {
   .day-card { grid-template-columns: 1fr; }
@@ -388,7 +389,7 @@ body {
 </div>
 
 <div class="edit-toolbar">
-  <button onclick="saveToLocal()">💾 儲存修改</button>
+  <button onclick="saveAndPublish()">💾 儲存並發佈</button>
   <button onclick="exportClean()">📥 匯出 HTML</button>
   <button onclick="resetAll()">🔄 重設原始</button>
 </div>
@@ -795,6 +796,143 @@ document.addEventListener('click', function(e) {
     window.open(e.target.src, '_blank');
   }
 });
+
+// === GitHub API Publish ===
+const GITHUB_TOKEN_KEY = 'storyline_gh_token';
+const REPO_OWNER = 'Jase-Works';
+const REPO_NAME = 'web-pages';
+const FILE_PATH_ZH = 'Foxconn/VN/bacninh/2026trip/index.html';
+
+async function saveAndPublish() {
+  // First check if we have a token
+  let token = localStorage.getItem(GITHUB_TOKEN_KEY);
+  if (!token) {
+    token = prompt('首次發佈需要 GitHub Token\n（到 github.com/settings/tokens 建立，勾選 repo 權限）\n\n請貼上 Token:');
+    if (!token) return;
+    localStorage.setItem(GITHUB_TOKEN_KEY, token);
+  }
+  
+  const msg = document.getElementById('saveMsg');
+  msg.textContent = '⏳ 發佈中...';
+  msg.style.opacity = '1';
+  
+  try {
+    // Generate clean HTML from current DOM
+    const cleanHtml = generateCleanHtml();
+    
+    // Get current file SHA (required for update)
+    const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH_ZH}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    
+    if (!getRes.ok) {
+      if (getRes.status === 401) {
+        localStorage.removeItem(GITHUB_TOKEN_KEY);
+        throw new Error('Token 無效或過期，請重新輸入');
+      }
+      throw new Error(`GitHub API error: ${getRes.status}`);
+    }
+    
+    const fileData = await getRes.json();
+    const sha = fileData.sha;
+    
+    // PUT updated content
+    const content = btoa(unescape(encodeURIComponent(cleanHtml)));
+    const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH_ZH}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `Update Storyline (${new Date().toLocaleString('zh-TW')})`,
+        content: content,
+        sha: sha
+      })
+    });
+    
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || `PUT failed: ${putRes.status}`);
+    }
+    
+    msg.textContent = '✅ 發佈成功！約 1-2 分鐘後生效';
+    setTimeout(() => { msg.style.opacity = '0'; }, 4000);
+    
+  } catch(e) {
+    msg.textContent = '❌ ' + e.message;
+    setTimeout(() => { msg.style.opacity = '0'; }, 5000);
+    if (e.message.includes('Token')) {
+      localStorage.removeItem(GITHUB_TOKEN_KEY);
+    }
+  }
+}
+
+function generateCleanHtml() {
+  // Clone current document
+  const clone = document.documentElement.cloneNode(true);
+  
+  // Remove toolbar
+  const toolbar = clone.querySelector('.edit-toolbar');
+  if (toolbar) toolbar.remove();
+  
+  // Remove save indicator
+  const indicator = clone.querySelector('.save-indicator');
+  if (indicator) indicator.remove();
+  
+  // Remove upload area
+  const upload = clone.querySelector('.upload-area');
+  if (upload) upload.remove();
+  
+  // Remove all scripts
+  clone.querySelectorAll('script').forEach(s => s.remove());
+  
+  // Change data-editable back but remove contenteditable
+  clone.querySelectorAll('[data-editable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('data-editable');
+  });
+  
+  // Remove delete buttons on attachments
+  clone.querySelectorAll('.attachment-delete').forEach(b => b.remove());
+  
+  // Remove lang-switcher active states (keep links)
+  // Remove editable CSS block
+  const style = clone.querySelector('style');
+  if (style) {
+    style.textContent = style.textContent.replace(/\/\* Editable \*\/[\s\S]*?\.save-indicator\.show \{ opacity: 1; \}/, '');
+    // Also remove toolbar/upload display:none since they wont exist
+  }
+  
+  // Make attachments default open
+  clone.querySelectorAll('.attachment-preview').forEach(p => {
+    p.classList.add('open');
+    p.style.display = 'block';
+  });
+  clone.querySelectorAll('.attachment-toggle').forEach(t => {
+    t.classList.add('open');
+    t.textContent = '▼';
+  });
+  
+  // Add minimal toggle script for viewers
+  const toggleScript = document.createElement('script');
+  toggleScript.textContent = `
+document.querySelectorAll('.attachment-header').forEach(h => {
+  h.addEventListener('click', function() {
+    const p = this.nextElementSibling;
+    const t = this.querySelector('.attachment-toggle');
+    const isOpen = p.classList.contains('open');
+    p.classList.toggle('open');
+    p.style.display = isOpen ? 'none' : 'block';
+    t.classList.toggle('open');
+    t.textContent = isOpen ? '▶' : '▼';
+  });
+});`;
+  clone.querySelector('body').appendChild(toggleScript);
+  
+  return '<!DOCTYPE html>\n' + clone.outerHTML;
+}
+
 // === Password-gated editing ===
 const EDIT_PASSWORD = 'foxconn';
 const SESSION_KEY = 'storyline_edit_session';
